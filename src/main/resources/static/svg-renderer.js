@@ -2,7 +2,7 @@ async function init() {
     console.log("Init...");
 
     // Create WebSocket connection.
-    const socket = new WebSocket("ws://localhost:8081");
+    const socket = new WebSocket("ws://localhost:8080/websocket");
 
     // Connection opened
     socket.addEventListener("open", (event) => {

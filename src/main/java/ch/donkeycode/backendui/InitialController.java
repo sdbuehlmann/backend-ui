@@ -40,12 +40,12 @@ public class InitialController {
     }
 
     @SneakyThrows
-//    @GetMapping("*")
+    @GetMapping("/ui/*")
     public String getHtml(HttpServletRequest request) {
         LOG.info("HTML requested over path {}", request.getRequestURI());
 
         val filename = Optional.ofNullable(request.getRequestURI())
-                .map(s -> s.replace("/", ""))
+                .map(s -> s.replace("/ui/", ""))
                 .filter(s -> !s.isBlank())
                 .orElseGet(() -> {
                     LOG.info("No file defined in request, returned index.html as default.");
@@ -75,16 +75,5 @@ public class InitialController {
                     );
                     return new IllegalArgumentException();
                 });
-    }
-
-    @RequestMapping("**")
-    public String onCall(final HttpServletRequest request) {
-
-        if (request.getMethod().equalsIgnoreCase("GET")) {
-            return getHtml(request);
-        }
-
-        LOG.error("{} request on {} not handled", request.getMethod(), request.getRequestURI());
-        throw new IllegalArgumentException();
     }
 }
