@@ -1,5 +1,6 @@
 package ch.donkeycode.backendui;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +9,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +40,7 @@ public class InitialController {
     }
 
     @SneakyThrows
-    @GetMapping("*")
+//    @GetMapping("*")
     public String getHtml(HttpServletRequest request) {
         LOG.info("HTML requested over path {}", request.getRequestURI());
 
@@ -70,5 +75,16 @@ public class InitialController {
                     );
                     return new IllegalArgumentException();
                 });
+    }
+
+    @RequestMapping("**")
+    public String onCall(final HttpServletRequest request) {
+
+        if (request.getMethod().equalsIgnoreCase("GET")) {
+            return getHtml(request);
+        }
+
+        LOG.error("{} request on {} not handled", request.getMethod(), request.getRequestURI());
+        throw new IllegalArgumentException();
     }
 }
