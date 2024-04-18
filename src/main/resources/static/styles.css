@@ -1,0 +1,23 @@
+#container {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+#inputs-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+#inputs-container * {
+    width: 200px;
+    margin: 5px;
+}
+
+.highlightable:hover {
+    fill: white;
+}
+
+.highlightable-path:hover {
+    stroke: white;
+}
