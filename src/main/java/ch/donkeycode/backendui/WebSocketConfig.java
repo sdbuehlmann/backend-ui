@@ -1,5 +1,9 @@
 package ch.donkeycode.backendui;
 
+import ch.donkeycode.backendui.dto.HtmlElementUpdateDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -11,6 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @Configuration
+@Slf4j
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
@@ -22,9 +27,27 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     public static class MyWebSocketHandler implements WebSocketHandler {
 
+        private final ObjectMapper om = new ObjectMapper();
+
         @Override
         public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-            session.sendMessage(new TextMessage("Hello Client"));
+//            session.sendMessage(new TextMessage("Hello Client"));
+//            Thread.sleep(2000);
+//            session.sendMessage(new TextMessage("Hello Client!!!!"));
+
+            Thread.sleep(2000);
+
+            val update = HtmlElementUpdateDto.builder()
+                    .elementId("loading")
+                    .elementHtml("<h1 style=\"font-family: 'Agency FB'; color: white\" id=\"loading\">\n" +
+                            "        Backend UI ready!\n" +
+                            "    </h1>")
+                    .build();
+
+            val json = om.writeValueAsString(update);
+            LOG.info("Send json: {}", json);
+
+            session.sendMessage(new TextMessage(json));
         }
 
         @Override
