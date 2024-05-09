@@ -1,3 +1,6 @@
+
+const SOCKET = new WebSocket("ws://localhost:8080/websocket");
+
 async function init() {
     console.log("Init...");
 
@@ -6,7 +9,8 @@ async function init() {
     console.log(loadingElement.innerText);
 
     // Create WebSocket connection.
-    const socket = new WebSocket("ws://localhost:8080/websocket");
+    // const socket = new WebSocket("ws://localhost:8080/websocket");
+    const socket = SOCKET;
 
     // Connection opened
     socket.addEventListener("open", (event) => {
@@ -39,7 +43,69 @@ function replace(dto) {
     const temp = document.createElement('div');
     temp.innerHTML = dto.elementHtml;
 
+    console.log("Replaced element with id " + dto.elementId + "replaced with " + dto.elementHtml)
+
     parentElement.replaceChild(temp.firstChild, oldElement);
+}
+
+/**
+ *
+ * @param {string} actionId
+ * @param {string} parentElementId
+ */
+function collectAllValues(actionId, parentElementId) {
+    const allIds = document
+        .getElementById(parentElementId)
+        .querySelectorAll('[id]');
+
+    const elementValues = Array
+        .from(allIds)
+        .map(element => new ElementValueDto(element.id, element.value));
+
+    SOCKET.send(JSON.stringify(new ChildElementValuesDto(actionId, parentElementId, elementValues)));
+}
+
+class ChildElementValuesDto {
+
+    /** @type {string} */
+    triggeringActionId;
+
+    /** @type {string} */
+    parentElementId;
+
+    /** @type {ElementValueDto[]} */
+    elementValues;
+
+    /**
+     *
+     * @param {string} triggeringActionId
+     * @param {string} parentElementId
+     * @param {ElementValueDto[]} elementValues
+     */
+    constructor(triggeringActionId, parentElementId, elementValues) {
+        this.triggeringActionId = triggeringActionId;
+        this.parentElementId = parentElementId;
+        this.elementValues = elementValues;
+    }
+}
+
+class ElementValueDto {
+
+    /** @type {string} */
+    elementId;
+
+    /** @type {string} */
+    value;
+
+    /**
+     *
+     * @param {string} elementId
+     * @param {string} elementHtml
+     */
+    constructor(elementId, value) {
+        this.elementId = elementId;
+        this.value = value;
+    }
 }
 
 class HtmlElementUpdateDto {
