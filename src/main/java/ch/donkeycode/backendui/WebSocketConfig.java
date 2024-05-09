@@ -5,6 +5,9 @@ import ch.donkeycode.backendui.dto.ElementValueDto;
 import ch.donkeycode.backendui.dto.HtmlElementUpdateDto;
 import ch.donkeycode.backendui.form.FormRenderer;
 import ch.donkeycode.backendui.form.examples.ExampleForm;
+import ch.donkeycode.backendui.html.elements.table.TableRenderer;
+import ch.donkeycode.backendui.html.examples.persons.Person;
+import ch.donkeycode.backendui.html.examples.persons.RendererInstructions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -68,14 +71,33 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
             val rendered = new FormRenderer<>(ExampleForm.FORM, exampleForm).render();
 
+            val alina = Person.builder()
+                    .prename("Alina")
+                    .name("Abplanalp")
+                    .build();
+            val simon = Person.builder()
+                    .prename("Simon")
+                    .name("Bühlmann")
+                    .build();
+            val table = new TableRenderer<>(
+                    RendererInstructions.TABLE,
+                    List.of(alina, simon))
+                    .render();
+
+
             renderedForms.updateAndGet(rendererdForms -> {
                 rendererdForms.add(rendered);
                 return rendererdForms;
             });
 
+//            session.sendMessage(new TextMessage(om.writeValueAsString(HtmlElementUpdateDto.builder()
+//                    .elementId("loading")
+//                    .elementHtml(rendered.getHtml())
+//                    .build())));
+
             session.sendMessage(new TextMessage(om.writeValueAsString(HtmlElementUpdateDto.builder()
                     .elementId("loading")
-                    .elementHtml(rendered.getHtml())
+                    .elementHtml(table.getHtml())
                     .build())));
         }
 

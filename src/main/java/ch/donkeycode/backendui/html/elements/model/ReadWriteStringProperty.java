@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.form.model;
+package ch.donkeycode.backendui.html.elements.model;
 
 import lombok.NonNull;
 import lombok.Value;

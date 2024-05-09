@@ -1,6 +1,6 @@
 package ch.donkeycode.backendui.form.examples;
 
-import ch.donkeycode.backendui.form.model.ReadWriteStringProperty;
+import ch.donkeycode.backendui.html.elements.model.ReadWriteStringProperty;
 import ch.donkeycode.backendui.form.model.RenderableForm;
 import ch.donkeycode.backendui.form.model.RenderableFormAction;
 import ch.donkeycode.backendui.form.model.RenderableFormGroup;
