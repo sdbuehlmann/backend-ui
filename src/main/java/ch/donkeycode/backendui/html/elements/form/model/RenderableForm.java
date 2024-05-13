@@ -1,5 +1,6 @@
-package ch.donkeycode.backendui.form.model;
+package ch.donkeycode.backendui.html.elements.form.model;
 
+import ch.donkeycode.backendui.html.elements.model.RenderableAction;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -16,9 +17,5 @@ public class RenderableForm<T> {
 
     @Singular
     @NonNull
-    List<RenderableFormAction> actions;
-
-    public interface AfterSaveChangesAction<T> {
-        void doAfterSaveChanges(T edited) throws Exception;
-    }
+    List<RenderableAction<T>> actions;
 }

@@ -1,11 +1,13 @@
-package ch.donkeycode.backendui.form;
+package ch.donkeycode.backendui.html.elements.form;
 
+import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.frontend.functions.CollectValuesAndRun;
+import ch.donkeycode.backendui.html.elements.form.model.RenderableForm;
+import ch.donkeycode.backendui.html.elements.form.model.RenderableFormGroup;
+import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
 import ch.donkeycode.backendui.html.elements.model.ReadWriteStringProperty;
-import ch.donkeycode.backendui.form.model.RenderableForm;
-import ch.donkeycode.backendui.form.model.RenderableFormAction;
-import ch.donkeycode.backendui.form.model.RenderableFormGroup;
+import ch.donkeycode.backendui.html.elements.model.RenderableAction;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -19,12 +21,12 @@ public class FormRenderer<T> {
     private final RenderableForm<T> form;
     private final T data;
 
-    private final List<ElementBinding<T>> bindings = new ArrayList<>();
-    private final List<ActionBinding> actionBindings = new ArrayList<>();
+    private final List<CollectValuesAndRun.CollectableElement> collectableElements = new ArrayList<>();
+    private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
 
     private final UUID formId = UUID.randomUUID();
 
-    public RendererdForm<T> render() {
+    public DisplayableElement render() {
         val html = String.format("""
                         <div style="background: white; padding: 10px;" id="%s">
                             %s
@@ -35,9 +37,14 @@ public class FormRenderer<T> {
                 form.getGroups().stream()
                         .map(group -> createGroup(group, data))
                         .collect(Collectors.joining()),
-                render(form.getActions()));
+                createActionsBar(form.getActions()));
 
-        return new RendererdForm<>(formId, data, html, bindings, actionBindings);
+        return DisplayableElement.builder()
+                .id(formId)
+                .data(data)
+                .html(html)
+                .responseHandlers(responseHandlers)
+                .build();
     }
 
     private String createGroup(final RenderableFormGroup<T> group, final T data) {
@@ -80,56 +87,44 @@ public class FormRenderer<T> {
                 property.getValueExtractor().apply(data)
         );
 
-        bindings.add(new ElementBinding<>(elementId, property));
+        collectableElements.add(
+                new CollectValuesAndRun.CollectableElement(
+                        elementId,
+                        value -> property
+                                .getValuePersistor()
+                                .persistUnchecked(data, value)));
 
         return html;
     }
 
-    private String render(final List<RenderableFormAction> actions) {
+    private String createActionsBar(final List<RenderableAction<T>> actions) {
         return String.format("""
                         <div>
                             %s
                         </div>
                         """,
                 actions.stream()
-                        .map(this::render)
+                        .map(this::createActionButton)
                         .collect(Collectors.joining())
         );
     }
 
-    private String render(final RenderableFormAction action) {
-        val actionId = UUID.randomUUID();
+    private String createActionButton(final RenderableAction<T> action) {
+        val valuesCollector = CollectValuesAndRun.builder()
+                .parentElementId(formId)
+                .collectableElements(collectableElements)
+                .runnable(() -> action.getAction().accept(data))
+                .build();
+
         val html = String.format("""
-                        <button onclick="collectAllValues('%s','%s')">%s</button>
+                        <button onclick="%s">%s</button>
                         """,
-                actionId,
-                formId,
+                valuesCollector.asJsFunction(),
                 action.getTitle()
         );
 
-        actionBindings.add(new ActionBinding(actionId, action));
+        responseHandlers.add(valuesCollector);
 
         return html;
-    }
-
-    @Value
-    public static class ElementBinding<T> {
-        UUID elementId;
-        ReadWriteStringProperty<T> property;
-    }
-
-    @Value
-    public static class ActionBinding {
-        UUID actionId;
-        RenderableFormAction action;
-    }
-
-    @Value
-    public static class RendererdForm<T> {
-        UUID id;
-        T data;
-        String html;
-        List<ElementBinding<T>> bindings;
-        List<ActionBinding> actionBindings;
     }
 }

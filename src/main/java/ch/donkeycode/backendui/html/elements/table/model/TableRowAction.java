@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.html.elements.model;
+package ch.donkeycode.backendui.html.elements.table.model;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -6,10 +6,10 @@ import lombok.Value;
 import java.util.function.Consumer;
 
 @Value
-public class RenderableAction<T> {
+public class TableRowAction<T> {
     @NonNull
     String title;
 
     @NonNull
-    Consumer<T> action;
+    Consumer<T> onAction;
 }

@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.form.model;
+package ch.donkeycode.backendui.html.elements.form.model;
 
 import ch.donkeycode.backendui.html.elements.model.RenderableProperty;
 import lombok.Builder;

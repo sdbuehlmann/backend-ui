@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.dto;
+package ch.donkeycode.backendui.frontend.dto;
 
 import lombok.Builder;
 import lombok.Value;

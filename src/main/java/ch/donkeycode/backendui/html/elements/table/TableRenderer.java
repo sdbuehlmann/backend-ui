@@ -1,10 +1,13 @@
 package ch.donkeycode.backendui.html.elements.table;
 
+import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.frontend.functions.Run;
 import ch.donkeycode.backendui.html.elements.model.ActionBinding;
 import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
 import ch.donkeycode.backendui.html.elements.model.ElementBinding;
 import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
+import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -19,8 +22,7 @@ public class TableRenderer<T> {
     private final RenderableTable<T> renderableTable;
     private final List<T> data;
 
-    private final List<ElementBinding> elementBindings = new ArrayList<>();
-    private final List<ActionBinding> actionBindings = new ArrayList<>();
+    private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
 
     private final UUID formId = UUID.randomUUID();
 
@@ -39,8 +41,7 @@ public class TableRenderer<T> {
                 .id(formId)
                 .data(data)
                 .html(html)
-                .bindings(elementBindings)
-                .actionBindings(actionBindings)
+                .responseHandlers(responseHandlers)
                 .build();
     }
 
@@ -49,24 +50,28 @@ public class TableRenderer<T> {
                         <thead>
                             <tr>
                                 %s
+                                %s
                             </tr>
                         </thead>
                         """,
                 renderableTable.getProperties().stream()
-                        .map(this::createHeadEntry)
+                        .map(property -> createHeadEntry(property.getTitle()))
+                        .collect(Collectors.joining()),
+                renderableTable.getRowActions().stream()
+                        .map(action -> createHeadEntry("Actions"))
                         .collect(Collectors.joining())
         );
 
         return html;
     }
 
-    private String createHeadEntry(final ReadOnlyStringProperty<T> property) {
+    private String createHeadEntry(final String title) {
         val html = String.format("""
                         <th>
                             %s
                         </th>
                         """,
-                property.getTitle());
+                title);
 
         return html;
     }
@@ -89,10 +94,14 @@ public class TableRenderer<T> {
         val html = String.format("""
                         <tr>
                             %s
+                            %s
                         </tr>
                         """,
                 renderableTable.getProperties().stream()
                         .map(property -> createCell(property, data))
+                        .collect(Collectors.joining()),
+                renderableTable.getRowActions().stream()
+                        .map(action -> createActionCell(action, data))
                         .collect(Collectors.joining())
         );
 
@@ -105,6 +114,23 @@ public class TableRenderer<T> {
                         """,
                 property.getValueExtractor().apply(data)
         );
+
+        return html;
+    }
+
+    private String createActionCell(TableRowAction<T> action, T data) {
+        val function = Run.builder()
+                .runnable(() -> action.getOnAction().accept(data))
+                .build();
+
+        val html = String.format("""
+                        <td><a onclick="%s">%s</a></td>
+                        """,
+                function.asJsFunction(),
+                action.getTitle()
+        );
+
+        responseHandlers.add(function);
 
         return html;
     }

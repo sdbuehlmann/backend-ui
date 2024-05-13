@@ -15,4 +15,8 @@ public class RenderableTable<T> {
     @Singular
     @NonNull
     List<ReadOnlyStringProperty<T>> properties;
+
+    @Singular
+    @NonNull
+    List<TableRowAction<T>> rowActions;
 }

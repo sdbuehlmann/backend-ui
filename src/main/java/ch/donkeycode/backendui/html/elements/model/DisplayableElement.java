@@ -1,5 +1,6 @@
 package ch.donkeycode.backendui.html.elements.model;
 
+import ch.donkeycode.backendui.frontend.ResponseHandler;
 import lombok.Builder;
 import lombok.Value;
 
@@ -12,6 +13,5 @@ public class DisplayableElement {
     UUID id;
     Object data;
     String html;
-    List<ElementBinding> bindings;
-    List<ActionBinding> actionBindings;
+    List<ResponseHandler<?>> responseHandlers;
 }

@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.html.examples.persons;
+package ch.donkeycode.examples.persons.model;
 
 import lombok.Builder;
 import lombok.Data;

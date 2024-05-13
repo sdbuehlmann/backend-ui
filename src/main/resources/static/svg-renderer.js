@@ -1,4 +1,3 @@
-
 const SOCKET = new WebSocket("ws://localhost:8080/websocket");
 
 async function init() {
@@ -24,7 +23,7 @@ async function init() {
         console.log('Nachricht vom Server erhalten:', event.data);
 
         const jsonObject = JSON.parse(event.data);
-        replace(jsonObject);
+        replaceChildren(jsonObject);
     })
 
     // Eventlistener für den Fehlerfall hinzufügen
@@ -49,6 +48,20 @@ function replace(dto) {
 }
 
 /**
+ * @param {HtmlElementUpdateDto} dto
+ */
+function replaceChildren(dto) {
+    const parentElement = document.getElementById(dto.elementId);
+
+    const temp = document.createElement('div');
+    temp.innerHTML = dto.elementHtml;
+
+    console.log("Replaced element with id " + dto.elementId + "replaced with " + dto.elementHtml)
+
+    parentElement.replaceChildren(temp.firstChild);
+}
+
+/**
  *
  * @param {string} actionId
  * @param {string} parentElementId
@@ -62,7 +75,93 @@ function collectAllValues(actionId, parentElementId) {
         .from(allIds)
         .map(element => new ElementValueDto(element.id, element.value));
 
-    SOCKET.send(JSON.stringify(new ChildElementValuesDto(actionId, parentElementId, elementValues)));
+    const response = new ResponseDto(
+        actionId,
+        new ChildElementValuesDto(
+            actionId,
+            parentElementId,
+            elementValues));
+
+    SOCKET.send(JSON.stringify(response));
+}
+
+/**
+ *
+ * @param {string | undefined} parentElementId
+ * @returns {ElementValueDto[]}
+ */
+function collectChildValues(parentElementId) {
+    if (parentElementId === undefined) {
+        return [];
+    }
+
+    const element = document
+        .getElementById(parentElementId);
+
+    if (element !== null) {
+        const allIds = element.querySelectorAll('[id]');
+
+        return Array
+            .from(allIds)
+            .map(element => new ElementValueDto(element.id, element.value));
+    }
+
+    return [];
+}
+
+/**
+ *
+ * @param {string} actionId
+ * @param {string | undefined} parentElementId
+ */
+function fireAction(actionId, parentElementId) {
+    const response = new ResponseDto(actionId, null);
+
+    SOCKET.send(JSON.stringify(response));
+}
+
+class ResponseDto {
+    /** @type {string} */
+    id;
+
+    /** @type {Object | null} */
+    data;
+
+    constructor(id, data) {
+        this.id = id;
+        this.data = data;
+    }
+}
+
+class MessageDto {
+    /** @type {string} */
+    topic;
+
+    /** @type {Object | null} */
+    payload;
+
+    /**
+     * @param {string} topic
+     * @param {Object | null} payload
+     */
+    constructor(topic, payload) {
+        this.topic = topic;
+        this.payload = payload;
+    }
+}
+
+class ActionDto {
+
+    /** @type {string} */
+    id;
+
+    /** @type {Object | null} */
+    args;
+
+    constructor(id, args) {
+        this.id = id;
+        this.args = args;
+    }
 }
 
 class ChildElementValuesDto {
