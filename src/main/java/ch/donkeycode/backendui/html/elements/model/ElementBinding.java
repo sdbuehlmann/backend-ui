@@ -7,5 +7,5 @@ import java.util.UUID;
 @Value
 public class ElementBinding {
     UUID elementId;
-    ReadWriteStringProperty<?> property;
+    ReadWriteStringProperty<?,?> property;
 }

@@ -5,9 +5,10 @@ import ch.donkeycode.backendui.frontend.functions.CollectValuesAndRun;
 import ch.donkeycode.backendui.html.elements.form.model.RenderableForm;
 import ch.donkeycode.backendui.html.elements.form.model.RenderableFormGroup;
 import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
+import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.elements.model.ReadWriteStringProperty;
 import ch.donkeycode.backendui.html.elements.model.RenderableAction;
-import lombok.RequiredArgsConstructor;
+import ch.donkeycode.examples.persons.model.Buildable;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -15,16 +16,22 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-public class FormRenderer<T> {
+public class FormRenderer<T extends Buildable<T>> {
 
     private final RenderableForm<T> form;
     private final T data;
+    private final Buildable.Builder<T> builder;
 
     private final List<CollectValuesAndRun.CollectableElement> collectableElements = new ArrayList<>();
     private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
 
     private final UUID formId = UUID.randomUUID();
+
+    public FormRenderer(RenderableForm<T> form, T data) {
+        this.form = form;
+        this.data = data;
+        this.builder = data.toBuilder();
+    }
 
     public DisplayableElement render() {
         val html = String.format("""
@@ -60,11 +67,15 @@ public class FormRenderer<T> {
                 group.getProperties().stream()
                         .map(renderableProperty -> {
                             if (renderableProperty instanceof ReadWriteStringProperty) {
-                                return createField((ReadWriteStringProperty<T>) renderableProperty, data);
+                                return createField((ReadWriteStringProperty<T, ?>) renderableProperty, data);
+                            }
+
+                            if (renderableProperty instanceof ReadOnlyStringProperty) {
+                                return createField((ReadOnlyStringProperty<T>) renderableProperty, data);
                             }
 
                             throw new IllegalArgumentException(String.format(
-                                    "Property type %s ins not supported yet.",
+                                    "Property type %s is not supported yet.",
                                     renderableProperty.getClass().getName()
                             ));
                         })
@@ -73,8 +84,22 @@ public class FormRenderer<T> {
         return html;
     }
 
+    private String createField(ReadOnlyStringProperty<T> property, T data) {
+        val html = String.format("""
+                        <div style="display: flex; flex-direction: column; margin: 10px;">
+                        	<label>%s</label>
+                          	<input type="text" value="%s" disabled>
+                        </div>
+                        """,
+                property.getTitle(),
+                property.getValueExtractor().apply(data)
+        );
 
-    private String createField(final ReadWriteStringProperty<T> property, final T data) {
+        return html;
+    }
+
+
+    private String createField(final ReadWriteStringProperty<T, ?> property, final T data) {
         val elementId = UUID.randomUUID();
         val html = String.format("""
                         <div style="display: flex; flex-direction: column; margin: 10px;">
@@ -92,7 +117,7 @@ public class FormRenderer<T> {
                         elementId,
                         value -> property
                                 .getValuePersistor()
-                                .persistUnchecked(data, value)));
+                                .persistUnchecked(builder, value)));
 
         return html;
     }
@@ -113,7 +138,9 @@ public class FormRenderer<T> {
         val valuesCollector = CollectValuesAndRun.builder()
                 .parentElementId(formId)
                 .collectableElements(collectableElements)
-                .runnable(() -> action.getAction().accept(data))
+                .runnable(() -> action
+                        .getAction()
+                        .accept(builder.build()))
                 .build();
 
         val html = String.format("""

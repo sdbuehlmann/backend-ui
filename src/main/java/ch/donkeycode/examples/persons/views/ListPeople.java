@@ -5,6 +5,7 @@ import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.elements.table.TableRenderer;
 import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
 import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
+import ch.donkeycode.examples.persons.Converter;
 import ch.donkeycode.examples.persons.NavigationTargetRegistry;
 import ch.donkeycode.examples.persons.model.Person;
 import ch.donkeycode.backendui.navigation.NavigationContext;
@@ -25,6 +26,14 @@ public class ListPeople implements ViewController<List<Person>> {
     @Override
     public DisplayableElement render(NavigationContext navigationContext, List<Person> model) {
         val table = RenderableTable.<Person>builder()
+                .property(new ReadOnlyStringProperty<>(
+                        "ID",
+                        Converter.objToString(Person::getId)
+                ))
+                .property(new ReadOnlyStringProperty<>(
+                        "Zuletzt geändert",
+                        Converter.localDateTimeToString(Person::getLastUpdatedAt)
+                ))
                 .property(new ReadOnlyStringProperty<>(
                         "Name",
                         Person::getName
