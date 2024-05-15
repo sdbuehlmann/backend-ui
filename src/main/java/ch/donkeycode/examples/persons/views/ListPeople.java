@@ -6,7 +6,7 @@ import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.elements.table.TableRenderer;
 import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
 import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
-import ch.donkeycode.backendui.navigation.NavigationContext;
+import ch.donkeycode.backendui.navigation.ViewContext;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewController;
 import ch.donkeycode.examples.persons.Converter;
@@ -31,13 +31,11 @@ public class ListPeople implements ViewController<List<Person>> {
     }
 
     @Override
-    public DisplayableElement render(NavigationContext navigationContext, List<Person> model) {
+    public DisplayableElement render(ViewContext viewContext, List<Person> model) {
         val table = RenderableTable.<Person>builder()
                 .tableAction(new RenderableRunnable(
                         "Neu",
-                        () -> navigationContext
-                                .getNavigator()
-                                .navigate(NavigationTargetRegistry.EDIT_PERSON, Person.builder()
+                        () -> viewContext.display(NavigationTargetRegistry.EDIT_PERSON, Person.builder()
                                         .prename("")
                                         .name("")
                                         .build())
@@ -60,17 +58,13 @@ public class ListPeople implements ViewController<List<Person>> {
                 ))
                 .rowAction(new TableRowAction<>(
                         "Bearbeiten",
-                        person -> navigationContext
-                                .getNavigator()
-                                .navigate(NavigationTargetRegistry.EDIT_PERSON, person)
+                        person -> viewContext.display(NavigationTargetRegistry.EDIT_PERSON, person)
                 ))
                 .rowAction(new TableRowAction<>(
                         "Löschen",
                         person -> {
                             peopleStore.deleteById(person.getId());
-                            navigationContext
-                                    .getNavigator()
-                                    .navigate(NavigationTargetRegistry.LIST_PEOPLE, peopleStore.getPersons());
+                            viewContext.display(NavigationTargetRegistry.LIST_PEOPLE, peopleStore.getPersons());
                         }
                 ))
                 .build();

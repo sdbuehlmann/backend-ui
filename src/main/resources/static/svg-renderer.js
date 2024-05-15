@@ -3,23 +3,11 @@ const SOCKET = new WebSocket("ws://localhost:8080/websocket");
 async function init() {
     console.log("Init...");
 
-    const loadingElement = document.getElementById("loading");
-    console.log(loadingElement.innerHTML);
-    console.log(loadingElement.innerText);
-
     // Create WebSocket connection.
     // const socket = new WebSocket("ws://localhost:8080/websocket");
     const socket = SOCKET;
 
-    // Connection opened
-    socket.addEventListener("open", (event) => {
-        console.log("WS open");
-        socket.send("Hello Server!");
-        console.log("Hello Server!");
-    });
-
     socket.addEventListener("message", event => {
-        console.log("Event!");
         console.log('Nachricht vom Server erhalten:', event.data);
 
         const jsonObject = JSON.parse(event.data);

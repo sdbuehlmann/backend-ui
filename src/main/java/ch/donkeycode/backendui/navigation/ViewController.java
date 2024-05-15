@@ -6,5 +6,5 @@ public interface ViewController<T> {
 
     NavigationTarget<T> getHandledNavigationTarget();
 
-    DisplayableElement render(NavigationContext context, T model);
+    DisplayableElement render(ViewContext context, T model);
 }

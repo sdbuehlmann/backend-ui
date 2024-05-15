@@ -4,11 +4,10 @@ import ch.donkeycode.backendui.frontend.ResponseHandler;
 import ch.donkeycode.backendui.frontend.dto.HtmlElementUpdateDto;
 import ch.donkeycode.backendui.frontend.dto.ResponseDto;
 import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.examples.persons.NavigationTargetRegistry;
-import ch.donkeycode.examples.persons.model.Person;
 import ch.donkeycode.backendui.navigation.NavigationService;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.Navigator;
+import ch.donkeycode.examples.persons.NavigationTargetRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,7 +25,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Configuration
@@ -46,7 +45,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @RequiredArgsConstructor
     public static class MyWebSocketHandler implements WebSocketHandler, Navigator {
 
-        private static final String MAIN_ELEMENT_ID = "main";
+        private static final UUID MAIN_ELEMENT_ID = UUID.fromString("0490eee0-c48a-42c6-9296-be94c83acb2d");
 
         private final ObjectMapper om = new ObjectMapper();
 
@@ -72,14 +71,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
             session.sendMessage(new TextMessage(json));
             Thread.sleep(1000);
 
-            navigationService.context(displayableElement -> sendUpdate(session, displayableElement))
-                    .getNavigator()
-                    .navigate(
-                            NavigationTargetRegistry.EDIT_PERSON,
-                            Person.builder()
-                                    .prename("Alina")
-                                    .name("Abplanalp")
-                                    .build());
+            navigationService
+                    .context((displayableElement, containerId) -> sendUpdate(session, displayableElement, containerId), MAIN_ELEMENT_ID)
+                    .display(NavigationTargetRegistry.MAIN, null);
         }
 
         @Override
@@ -144,14 +138,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
         }
 
         @SneakyThrows
-        private void sendUpdate(WebSocketSession session, DisplayableElement element) {
+        private void sendUpdate(WebSocketSession session, DisplayableElement element, UUID containerId) {
             currentElements.updateAndGet(elements -> {
                 elements.add(element);
                 return elements;
             });
 
             session.sendMessage(new TextMessage(om.writeValueAsString(HtmlElementUpdateDto.builder()
-                    .elementId(MAIN_ELEMENT_ID)
+                    .elementId(containerId)
                     .elementHtml(element.getHtml())
                     .build())));
         }

@@ -11,7 +11,7 @@ import ch.donkeycode.examples.persons.Converter;
 import ch.donkeycode.examples.persons.NavigationTargetRegistry;
 import ch.donkeycode.examples.persons.model.Buildable;
 import ch.donkeycode.examples.persons.model.Person;
-import ch.donkeycode.backendui.navigation.NavigationContext;
+import ch.donkeycode.backendui.navigation.ViewContext;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewController;
 import ch.donkeycode.examples.persons.services.PeopleStore;
@@ -20,7 +20,6 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class EditPerson implements ViewController<Person> {
     }
 
     @Override
-    public DisplayableElement render(NavigationContext context, Person model) {
+    public DisplayableElement render(ViewContext context, Person model) {
         val form = RenderableForm.<Person>builder()
                 .builderCreator(Buildable::toBuilder)
                 .group(RenderableFormGroup.<Person>builder()
@@ -68,8 +67,7 @@ public class EditPerson implements ViewController<Person> {
                                         .lastUpdatedAt(LocalDateTime.now())
                                         .build());
                             context
-                                    .getNavigator()
-                                    .navigate(
+                                    .display(
                                             NavigationTargetRegistry.LIST_PEOPLE,
                                             peopleStore.getPersons());
                         }
@@ -77,8 +75,7 @@ public class EditPerson implements ViewController<Person> {
                 .action(new RenderableAction<>(
                         "Abbrechen",
                         person -> context
-                                .getNavigator()
-                                .navigate(
+                                .display(
                                         NavigationTargetRegistry.LIST_PEOPLE,
                                         peopleStore.getPersons())
                 ))
