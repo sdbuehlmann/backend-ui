@@ -11,7 +11,6 @@ import java.util.UUID;
 @Builder
 public class DisplayableElement {
     UUID id;
-    Object data;
     String html;
     List<ResponseHandler<?>> responseHandlers;
 }

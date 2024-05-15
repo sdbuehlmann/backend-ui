@@ -48,7 +48,6 @@ public class FormRenderer<T extends Buildable<T>> {
 
         return DisplayableElement.builder()
                 .id(formId)
-                .data(data)
                 .html(html)
                 .responseHandlers(responseHandlers)
                 .build();

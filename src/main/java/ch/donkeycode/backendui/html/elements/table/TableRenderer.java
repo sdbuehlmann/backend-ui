@@ -1,11 +1,10 @@
 package ch.donkeycode.backendui.html.elements.table;
 
 import ch.donkeycode.backendui.frontend.ResponseHandler;
-import ch.donkeycode.backendui.frontend.functions.Run;
-import ch.donkeycode.backendui.html.elements.model.ActionBinding;
+import ch.donkeycode.backendui.html.elements.actionbar.ActionBarRenderer;
 import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.backendui.html.elements.model.ElementBinding;
 import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
+import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
 import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class TableRenderer<T> {
@@ -27,22 +27,36 @@ public class TableRenderer<T> {
     private final UUID formId = UUID.randomUUID();
 
     public DisplayableElement render() {
+        val actionBar = new ActionBarRenderer(renderableTable.getTableActions()).render();
+
         val html = String.format("""
-                        <table style="background: white; padding: 10px;" id="%s">
+                        <div style="background: white; padding: 10px;" id="%s">
                             %s
                             %s
                         </table>
                         """,
                 formId,
-                createHead(),
-                createBody());
+                actionBar.getHtml(),
+                createTable());
 
         return DisplayableElement.builder()
                 .id(formId)
-                .data(data)
                 .html(html)
-                .responseHandlers(responseHandlers)
+                .responseHandlers(
+                        Stream.concat(actionBar.getResponseHandlers().stream(), responseHandlers.stream())
+                                .toList())
                 .build();
+    }
+
+    private String createTable() {
+        return String.format("""
+                        <table>
+                            %s
+                            %s
+                        </table>
+                        """,
+                createHead(),
+                createBody());
     }
 
     private String createHead() {
@@ -57,9 +71,7 @@ public class TableRenderer<T> {
                 renderableTable.getProperties().stream()
                         .map(property -> createHeadEntry(property.getTitle()))
                         .collect(Collectors.joining()),
-                renderableTable.getRowActions().stream()
-                        .map(action -> createHeadEntry("Actions"))
-                        .collect(Collectors.joining())
+                createHeadEntry("")
         );
 
         return html;
@@ -67,7 +79,7 @@ public class TableRenderer<T> {
 
     private String createHeadEntry(final String title) {
         val html = String.format("""
-                        <th>
+                        <th style="text-align: left; padding: 8px;">
                             %s
                         </th>
                         """,
@@ -100,9 +112,7 @@ public class TableRenderer<T> {
                 renderableTable.getProperties().stream()
                         .map(property -> createCell(property, data))
                         .collect(Collectors.joining()),
-                renderableTable.getRowActions().stream()
-                        .map(action -> createActionCell(action, data))
-                        .collect(Collectors.joining())
+                createActionCell(renderableTable.getRowActions(), data)
         );
 
         return html;
@@ -110,7 +120,7 @@ public class TableRenderer<T> {
 
     private String createCell(ReadOnlyStringProperty<T> property, T data) {
         val html = String.format("""
-                        <td>%s</td>
+                        <td style="text-align: left; padding: 8px;">%s</td>
                         """,
                 property.getValueExtractor().apply(data)
         );
@@ -118,19 +128,18 @@ public class TableRenderer<T> {
         return html;
     }
 
-    private String createActionCell(TableRowAction<T> action, T data) {
-        val function = Run.builder()
-                .runnable(() -> action.getOnAction().accept(data))
-                .build();
+    private String createActionCell(List<TableRowAction<T>> actions, T data) {
+        val actionBar = new ActionBarRenderer(actions.stream()
+                .map(tableRowAction -> new RenderableRunnable(tableRowAction.getTitle(), () -> tableRowAction.getOnAction().accept(data)))
+                .toList()).render();
 
         val html = String.format("""
-                        <td><a onclick="%s">%s</a></td>
+                        <td style="text-align: left; padding: 8px;">%s</td>
                         """,
-                function.asJsFunction(),
-                action.getTitle()
+                actionBar.getHtml()
         );
 
-        responseHandlers.add(function);
+        responseHandlers.addAll(actionBar.getResponseHandlers());
 
         return html;
     }

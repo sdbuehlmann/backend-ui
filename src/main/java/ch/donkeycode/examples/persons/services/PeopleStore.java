@@ -5,10 +5,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -28,14 +29,22 @@ public class PeopleStore {
         return personsRef.get();
     }
 
-    public void update(UUID id, UnaryOperator<Person> updater) {
+    public void createOrUpdate(UUID id, Function<Optional<Person>, Person> updater) {
+
         personsRef.updateAndGet(people -> {
+            val existing = new AtomicBoolean(false);
+
             people.replaceAll(person -> {
                 if (person.getId().equals(id)) {
-                    return updater.apply(person);
+                    existing.set(true);
+                    return updater.apply(Optional.of(person));
                 }
                 return person;
             });
+
+            if (!existing.get()) {
+                people.add(updater.apply(Optional.empty()));
+            }
 
             return people;
         });
@@ -46,6 +55,13 @@ public class PeopleStore {
             List<Person> newPersons = new ArrayList<>(persons);
             newPersons.add(person);
             return newPersons;
+        });
+    }
+
+    public void deleteById(UUID id) {
+        personsRef.updateAndGet(people -> {
+            people.removeIf(person -> person.getId().equals(id));
+            return people;
         });
     }
 }

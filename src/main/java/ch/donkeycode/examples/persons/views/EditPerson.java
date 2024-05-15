@@ -64,7 +64,7 @@ public class EditPerson implements ViewController<Person> {
                 .action(new RenderableAction<>(
                         "Speichern",
                         person -> {
-                            peopleStore.update(person.getId(), unused -> person.toBuilder()
+                            peopleStore.createOrUpdate(person.getId(), unused -> person.toBuilder()
                                         .lastUpdatedAt(LocalDateTime.now())
                                         .build());
                             context

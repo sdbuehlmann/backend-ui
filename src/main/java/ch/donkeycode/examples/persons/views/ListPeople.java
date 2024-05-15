@@ -2,22 +2,29 @@ package ch.donkeycode.examples.persons.views;
 
 import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
 import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
+import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.elements.table.TableRenderer;
 import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
 import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
-import ch.donkeycode.examples.persons.Converter;
-import ch.donkeycode.examples.persons.NavigationTargetRegistry;
-import ch.donkeycode.examples.persons.model.Person;
 import ch.donkeycode.backendui.navigation.NavigationContext;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewController;
+import ch.donkeycode.examples.persons.Converter;
+import ch.donkeycode.examples.persons.NavigationTargetRegistry;
+import ch.donkeycode.examples.persons.model.Person;
+import ch.donkeycode.examples.persons.services.PeopleStore;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ListPeople implements ViewController<List<Person>> {
+
+    private final PeopleStore peopleStore;
+
     @Override
     public NavigationTarget<List<Person>> getHandledNavigationTarget() {
         return NavigationTargetRegistry.LIST_PEOPLE;
@@ -26,6 +33,15 @@ public class ListPeople implements ViewController<List<Person>> {
     @Override
     public DisplayableElement render(NavigationContext navigationContext, List<Person> model) {
         val table = RenderableTable.<Person>builder()
+                .tableAction(new RenderableRunnable(
+                        "Neu",
+                        () -> navigationContext
+                                .getNavigator()
+                                .navigate(NavigationTargetRegistry.EDIT_PERSON, Person.builder()
+                                        .prename("")
+                                        .name("")
+                                        .build())
+                ))
                 .property(new ReadOnlyStringProperty<>(
                         "ID",
                         Converter.objToString(Person::getId)
@@ -47,6 +63,15 @@ public class ListPeople implements ViewController<List<Person>> {
                         person -> navigationContext
                                 .getNavigator()
                                 .navigate(NavigationTargetRegistry.EDIT_PERSON, person)
+                ))
+                .rowAction(new TableRowAction<>(
+                        "Löschen",
+                        person -> {
+                            peopleStore.deleteById(person.getId());
+                            navigationContext
+                                    .getNavigator()
+                                    .navigate(NavigationTargetRegistry.LIST_PEOPLE, peopleStore.getPersons());
+                        }
                 ))
                 .build();
 
