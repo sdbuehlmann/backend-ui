@@ -30,6 +30,10 @@ public class Converter {
         return t -> String.valueOf(intGetter.apply(t));
     }
 
+    public static <T> Function<T, String> doubleToString(Function<T, Double> getter) {
+        return t -> String.valueOf(getter.apply(t));
+    }
+
     public static <T> Function<T, String> longToString(Function<T, Long> longGetter) {
         return t -> String.valueOf(longGetter.apply(t));
     }

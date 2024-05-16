@@ -31,8 +31,10 @@ public class MainView implements ViewController<Void> {
         val containerIdRef = new AtomicReference<UUID>(); // TODO remove dirty hack...
         val tabs = List.of(
                 new RenderableRunnable(
-                        "Settings",
-                        () -> System.out.println("Display settings")
+                        "Verfügbare WebCams",
+                        () -> context
+                                .forSubContainer(containerIdRef.get())
+                                .display(NavigationTargetRegistry.LIST_WEBCAMS, null)
                 ),
                 new RenderableRunnable(
                         "Esel anzeigen",
