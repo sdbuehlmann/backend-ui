@@ -12,9 +12,6 @@ import java.util.UUID;
 @Builder
 public class DisplayableElement {
     @NonNull
-    UUID id;
-
-    @NonNull
     String html;
 
     @NonNull

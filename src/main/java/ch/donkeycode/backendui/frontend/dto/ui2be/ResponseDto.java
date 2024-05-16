@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.frontend.dto;
+package ch.donkeycode.backendui.frontend.dto.ui2be;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;

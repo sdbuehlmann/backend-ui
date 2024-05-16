@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.frontend.dto;
+package ch.donkeycode.backendui.frontend.dto.ui2be;
 
 import lombok.Builder;
 import lombok.NonNull;

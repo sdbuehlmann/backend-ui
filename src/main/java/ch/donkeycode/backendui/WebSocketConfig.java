@@ -1,13 +1,10 @@
 package ch.donkeycode.backendui;
 
 import ch.donkeycode.backendui.frontend.ResponseHandler;
-import ch.donkeycode.backendui.frontend.dto.HtmlElementUpdateDto;
-import ch.donkeycode.backendui.frontend.dto.ResponseDto;
+import ch.donkeycode.backendui.frontend.dto.be2ui.SetInnerHtmlDto;
+import ch.donkeycode.backendui.frontend.dto.ui2be.ResponseDto;
 import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
 import ch.donkeycode.backendui.navigation.NavigationService;
-import ch.donkeycode.backendui.navigation.NavigationTarget;
-import ch.donkeycode.backendui.navigation.Navigator;
-import ch.donkeycode.examples.persons.NavigationTargetRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -43,7 +40,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
     @RequiredArgsConstructor
-    public static class MyWebSocketHandler implements WebSocketHandler, Navigator {
+    public static class MyWebSocketHandler implements WebSocketHandler {
 
         private static final UUID MAIN_ELEMENT_ID = UUID.fromString("0490eee0-c48a-42c6-9296-be94c83acb2d");
 
@@ -55,32 +52,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
         @Override
         public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-            Thread.sleep(1000);
-
-            val update = HtmlElementUpdateDto.builder()
-                    .elementId(MAIN_ELEMENT_ID)
-                    .elementHtml("""
-                            <h1 style="background: white;">
-                                Backend UI ready!
-                            </h1>
-                            """)
-                    .build();
-
-            val json = om.writeValueAsString(update);
-            LOG.info("Send json: {}", json);
-            session.sendMessage(new TextMessage(json));
-            Thread.sleep(1000);
-
             navigationService
                     .context((displayableElement, containerId) -> sendUpdate(session, displayableElement, containerId), MAIN_ELEMENT_ID)
-                    .display(NavigationTargetRegistry.MAIN, null);
+                    .displayRoot();
         }
 
         @Override
         public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
             // Hier kannst du die eingehenden Nachrichten verarbeiten
-
-
             try {
                 val responseDto = om.readValue(
                         message.getPayload().toString(),
@@ -125,16 +104,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
         @Override
         public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
             // Hier kannst du auf Verbindungsabbau reagieren
+            LOG.info("Connection closed: {}", closeStatus);
         }
 
         @Override
         public boolean supportsPartialMessages() {
             return false;
-        }
-
-        @Override
-        public <T> void navigate(NavigationTarget<T> target, T data) {
-
         }
 
         @SneakyThrows
@@ -144,9 +119,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 return elements;
             });
 
-            val payload = HtmlElementUpdateDto.builder()
-                    .elementId(containerId)
-                    .elementHtml(element.getHtml())
+            val payload = SetInnerHtmlDto.builder()
+                    .containerId(containerId)
+                    .html(element.getHtml())
                     .build();
 
             synchronized (session) {

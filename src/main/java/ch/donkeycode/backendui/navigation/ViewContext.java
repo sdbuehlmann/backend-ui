@@ -18,12 +18,42 @@ public class ViewContext {
     UUID containerId;
     BiConsumer<DisplayableElement, UUID> displayElement;
     List<ViewController<?>> viewControllers;
+    RootViewController rootViewController;
 
     AtomicReference<Optional<ViewController<?>>> currentViewController = new AtomicReference<>(Optional.empty());
 
     public <T> void display(NavigationTarget<T> target, T data) {
         val nextViewController = findMatchingViewController(target);
+        display(nextViewController, data);
+    }
 
+    public void displayRoot() {
+        display(rootViewController, null);
+    }
+
+    public ViewContext forSubContainer(UUID subContainerId) {
+        return new ViewContext(subContainerId, displayElement, viewControllers, rootViewController);
+    }
+
+    public void updateElement(UUID containerId, DisplayableElement displayableElement) {
+        displayElement.accept(displayableElement, containerId);
+    }
+
+    public void updateElement(UUID containerId, HtmlElement element) {
+        displayElement.accept(DisplayableElement.builder()
+                        .html(element.toString())
+                        .build(),
+                containerId);
+    }
+
+    public void update(HtmlElement element) {
+        displayElement.accept(DisplayableElement.builder()
+                        .html(element.toString())
+                        .build(),
+                containerId);
+    }
+
+    public <T> void display(ViewController<T> nextViewController, T data) {
         currentViewController.updateAndGet(previousViewController -> {
             previousViewController.ifPresent(viewController -> viewController.beforeLeafing(this));
 
@@ -37,22 +67,6 @@ public class ViewContext {
         });
     }
 
-    public ViewContext forSubContainer(UUID subContainerId) {
-        return new ViewContext(subContainerId, displayElement, viewControllers);
-    }
-
-    public void updateElement(UUID containerId, DisplayableElement displayableElement) {
-        displayElement.accept(displayableElement, containerId);
-    }
-
-    public void updateElement(UUID containerId, HtmlElement element) {
-        displayElement.accept(DisplayableElement.builder()
-                        .id(containerId)
-                        .html(element.toString())
-                        .build(),
-                containerId);
-    }
-
     private <T> ViewController<T> findMatchingViewController(NavigationTarget<T> target) {
         return viewControllers.stream()
                 .filter(controller -> controller.getHandledNavigationTarget().equals(target))
@@ -60,10 +74,4 @@ public class ViewContext {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("No view controller found for target " + target));
     }
-
-        /*
-        update...
-        delete...
-        ...
-         */
 }

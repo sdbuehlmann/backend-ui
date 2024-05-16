@@ -24,7 +24,6 @@ public class ActionBarRenderer {
         val html = createActionsBar(renderableRunnables);
 
         return DisplayableElement.builder()
-                .id(formId)
                 .html(html)
                 .responseHandlers(responseHandlers)
                 .build();

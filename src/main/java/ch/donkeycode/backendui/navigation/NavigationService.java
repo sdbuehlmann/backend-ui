@@ -11,12 +11,14 @@ import java.util.function.BiConsumer;
 @Service
 @RequiredArgsConstructor
 public class NavigationService {
+    private final RootViewController rootViewController;
     private final List<ViewController<?>> viewControllers;
 
     public ViewContext context(BiConsumer<DisplayableElement, UUID> display, UUID containerId) {
         return ViewContext.builder()
                 .containerId(containerId)
                 .displayElement(display)
+                .rootViewController(rootViewController)
                 .viewControllers(viewControllers)
                 .build();
     }

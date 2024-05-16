@@ -40,7 +40,6 @@ public class TableRenderer<T> {
                 createTable());
 
         return DisplayableElement.builder()
-                .id(formId)
                 .html(html)
                 .responseHandlers(
                         Stream.concat(actionBar.getResponseHandlers().stream(), responseHandlers.stream())

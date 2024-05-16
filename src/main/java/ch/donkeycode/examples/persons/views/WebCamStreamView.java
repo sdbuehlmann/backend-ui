@@ -75,7 +75,6 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
         }));
 
         return DisplayableElement.builder()
-                .id(UUID.randomUUID())
                 .html(layout.toString())
                 .responseHandlers(List.of())
                 .build();
@@ -88,7 +87,6 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
                 .stop();
 
         context.updateElement(imageContainerWrapperId, DisplayableElement.builder()
-                .id(UUID.randomUUID())
                 .html(HtmlElement.builder()
                         .name("div")
                         .content("Stop webcam stream...")

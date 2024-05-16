@@ -47,7 +47,6 @@ public class FormRenderer<T extends Buildable<T>> {
                 createActionsBar(form.getActions()));
 
         return DisplayableElement.builder()
-                .id(formId)
                 .html(html)
                 .responseHandlers(responseHandlers)
                 .build();

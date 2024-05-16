@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Value
 @Builder
-public class Run implements ResponseHandler<Void>, JsFunctionWrapper {
+public class Run implements ResponseHandler<Void> {
 
     @NonNull
     UUID responseId = UUID.randomUUID();
@@ -32,10 +32,9 @@ public class Run implements ResponseHandler<Void>, JsFunctionWrapper {
         runnable.run();
     }
 
-    @Override
     public String asJsFunction() {
         return String.format(
-                "fireAction('%s')",
+                "sendResponse('%s')",
                 responseId);
     }
 }

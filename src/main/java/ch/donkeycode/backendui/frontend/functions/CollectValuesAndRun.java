@@ -1,7 +1,7 @@
 package ch.donkeycode.backendui.frontend.functions;
 
 import ch.donkeycode.backendui.frontend.ResponseHandler;
-import ch.donkeycode.backendui.frontend.dto.ChildElementValuesDto;
+import ch.donkeycode.backendui.frontend.dto.ui2be.ElementValuesDto;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 @Value
 @Builder
-public class CollectValuesAndRun implements ResponseHandler<ChildElementValuesDto>, JsFunctionWrapper {
+public class CollectValuesAndRun implements ResponseHandler<ElementValuesDto> {
     @NonNull
     UUID parentElementId;
 
@@ -27,10 +27,9 @@ public class CollectValuesAndRun implements ResponseHandler<ChildElementValuesDt
     @NonNull
     Runnable runnable;
 
-    @Override
     public String asJsFunction() {
         return String.format("""
-                        collectAllValues('%s','%s')
+                        sendResponse('%s',collectElementValues('%s'))
                         """,
                 responseId,
                 parentElementId
@@ -38,21 +37,19 @@ public class CollectValuesAndRun implements ResponseHandler<ChildElementValuesDt
     }
 
     @Override
-    public Class<ChildElementValuesDto> getHandledType() {
-        return ChildElementValuesDto.class;
+    public Class<ElementValuesDto> getHandledType() {
+        return ElementValuesDto.class;
     }
 
     @Override
-    public void handleResponse(ChildElementValuesDto response) {
-        response
-                .getElementValues()
+    public void handleResponse(ElementValuesDto response) {
+        response.getValues()
                 .forEach(elementValue -> findCollectableElement(elementValue.getElementId())
                         .getValueConsumer()
                         .accept(elementValue.getValue()));
 
         runnable.run();
     }
-
 
     private CollectableElement findCollectableElement(UUID id) {
         return collectableElements.stream()

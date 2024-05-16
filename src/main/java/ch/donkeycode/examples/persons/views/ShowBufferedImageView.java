@@ -29,7 +29,6 @@ public class ShowBufferedImageView implements ViewController<BufferedImage> {
                 .build();
 
         return DisplayableElement.builder()
-                .id(UUID.randomUUID()) // TODO: ?
                 .html(img.toString())
                 .build();
     }

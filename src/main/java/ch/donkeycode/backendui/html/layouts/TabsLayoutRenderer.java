@@ -49,7 +49,6 @@ public class TabsLayoutRenderer {
         return Container.builder()
                 .containerId(containerId)
                 .displayableElement(DisplayableElement.builder()
-                        .id(elementId)
                         .html(html)
                         .responseHandlers(responseHandlers)
                         .build())
