@@ -79,14 +79,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
         @Override
         public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
             // Hier kannst du die eingehenden Nachrichten verarbeiten
-            LOG.info("Message received: {}", message);
+
 
             try {
                 val responseDto = om.readValue(
                         message.getPayload().toString(),
                         ResponseDto.class);
 
-                LOG.info("Deserialized: {}", responseDto);
+                LOG.info("Message received: {}", responseDto);
 
                 currentElements.updateAndGet(displayedElements -> {
                     displayedElements.stream()
@@ -144,10 +144,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 return elements;
             });
 
-            session.sendMessage(new TextMessage(om.writeValueAsString(HtmlElementUpdateDto.builder()
+            val payload = HtmlElementUpdateDto.builder()
                     .elementId(containerId)
                     .elementHtml(element.getHtml())
-                    .build())));
+                    .build();
+
+            LOG.info("Send update: {}", payload);
+
+            session.sendMessage(new TextMessage(om.writeValueAsString(payload)));
         }
     }
 }

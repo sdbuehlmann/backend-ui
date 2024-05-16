@@ -35,8 +35,10 @@ public class MainView implements ViewController<Void> {
                         () -> System.out.println("Display settings")
                 ),
                 new RenderableRunnable(
-                        "Monitoring",
-                        () -> System.out.println("Display monitoring")
+                        "Esel anzeigen",
+                        () -> context
+                                .forSubContainer(containerIdRef.get())
+                                .display(NavigationTargetRegistry.SHOW_DONKEY_IMAGE, null)
                 ),
                 new RenderableRunnable(
                         "Stammdaten",

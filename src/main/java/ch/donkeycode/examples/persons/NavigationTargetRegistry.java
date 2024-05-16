@@ -11,4 +11,5 @@ public class NavigationTargetRegistry {
 
     public static NavigationTarget<List<Person>> LIST_PEOPLE = new NavigationTarget<>();
     public static NavigationTarget<Person> EDIT_PERSON = new NavigationTarget<>();
+    public static NavigationTarget<Void> SHOW_DONKEY_IMAGE = new NavigationTarget<>();
 }

@@ -4,6 +4,8 @@ import ch.donkeycode.backendui.frontend.ResponseHandler;
 import ch.donkeycode.backendui.frontend.functions.Run;
 import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
 import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
+import ch.donkeycode.backendui.html.utils.CssStyle;
+import ch.donkeycode.backendui.html.utils.HtmlElement;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -77,79 +79,6 @@ public class TabsLayoutRenderer {
         responseHandlers.add(run);
 
         return html.toString();
-    }
-
-    private String createViewContainer(RenderableRunnable renderableRunnable) {
-        val html = """
-                <div>
-                    PLACEHOLDER
-                </div>
-                """;
-
-        return html;
-    }
-
-    @Value
-    @Builder
-    public static class HtmlElement {
-        @NonNull
-        String name;
-
-        @NonNull
-        String content;
-
-        @NonNull
-        Set<KeyValue> attributes;
-
-        @Override
-        public String toString() {
-            return String.format("""
-                    <%s %s>
-                        %s
-                    </%s>
-                    """,
-                    name,
-                    attributes.stream()
-                            .map(keyValue -> String.format("%s=\"%s\"", keyValue.getKey(), keyValue.getValue()))
-                            .collect(Collectors.joining(" ")),
-                    content,
-                    name
-                    );
-        }
-
-        public static class HtmlElementBuilder {
-            public HtmlElementBuilder attribute(String key, String value) {
-                if (this.attributes == null) {
-                    this.attributes = new HashSet<>();
-                }
-                this.attributes.add(new KeyValue(key, value));
-                return this;
-            }
-        }
-    }
-
-    public static class CssStyle {
-        private final List<KeyValue> entries = new ArrayList<>();
-
-        public CssStyle add(String key, String value) {
-            entries.add(new KeyValue(key, value));
-            return this;
-        }
-
-        public String toInlineStyle() {
-            return entries.stream()
-                    .map(cssStyleEntry -> String.format("%s: %s;", cssStyleEntry.getKey(), cssStyleEntry.getValue()))
-                    .collect(Collectors.joining());
-
-        }
-    }
-
-    @Value
-    public static class KeyValue {
-        @NonNull
-        String key;
-        @NonNull
-        String value;
     }
 
     @Value
