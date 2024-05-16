@@ -1,6 +1,6 @@
-package ch.donkeycode.backendui.html.elements.form.model;
+package ch.donkeycode.backendui.html.renderers.form.model;
 
-import ch.donkeycode.backendui.html.elements.model.RenderableAction;
+import ch.donkeycode.backendui.html.renderers.model.RenderableAction;
 import ch.donkeycode.examples.persons.model.Buildable;
 import lombok.Builder;
 import lombok.NonNull;

@@ -3,7 +3,7 @@ package ch.donkeycode.backendui;
 import ch.donkeycode.backendui.frontend.ResponseHandler;
 import ch.donkeycode.backendui.frontend.dto.HtmlElementUpdateDto;
 import ch.donkeycode.backendui.frontend.dto.ResponseDto;
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
 import ch.donkeycode.backendui.navigation.NavigationService;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.Navigator;

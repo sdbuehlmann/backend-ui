@@ -1,12 +1,12 @@
-package ch.donkeycode.backendui.html.elements.table;
+package ch.donkeycode.backendui.html.renderers.table;
 
 import ch.donkeycode.backendui.frontend.ResponseHandler;
-import ch.donkeycode.backendui.html.elements.actionbar.ActionBarRenderer;
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
-import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
-import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
-import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
+import ch.donkeycode.backendui.html.renderers.actionbar.ActionBarRenderer;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
+import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
+import ch.donkeycode.backendui.html.renderers.table.model.RenderableTable;
+import ch.donkeycode.backendui.html.renderers.table.model.TableRowAction;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 

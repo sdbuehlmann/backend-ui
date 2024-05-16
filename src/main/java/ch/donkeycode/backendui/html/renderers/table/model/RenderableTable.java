@@ -1,8 +1,7 @@
-package ch.donkeycode.backendui.html.elements.table.model;
+package ch.donkeycode.backendui.html.renderers.table.model;
 
-import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
-import ch.donkeycode.backendui.html.elements.model.RenderableAction;
-import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
+import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
+import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;

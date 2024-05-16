@@ -4,8 +4,11 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Value
@@ -46,6 +49,37 @@ public class HtmlElement {
             }
 
             this.attributes$value.add(new KeyValue(key, value));
+            return this;
+        }
+
+        public HtmlElementBuilder idAttribute(UUID id) {
+            this.attribute("id", id.toString());
+            return this;
+        }
+
+        public HtmlElementBuilder styleAttribute(CssStyle style) {
+            this.attribute("style", style.toInlineStyle());
+            return this;
+        }
+
+        public HtmlElementBuilder styleAttribute(Optional<CssStyle> optional) {
+            optional.ifPresent(this::styleAttribute);
+            return this;
+        }
+
+        public HtmlElementBuilder content(String... content) {
+            this.content$value = String.join("", content);
+            this.content$set = true;
+
+            return this;
+        }
+
+        public HtmlElementBuilder content(HtmlElement... elements) {
+            this.content$value = Arrays.stream(elements)
+                    .map(HtmlElement::toString)
+                    .collect(Collectors.joining());
+            this.content$set = true;
+
             return this;
         }
     }

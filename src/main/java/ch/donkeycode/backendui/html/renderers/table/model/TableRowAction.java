@@ -1,4 +1,4 @@
-package ch.donkeycode.backendui.html.elements.table.model;
+package ch.donkeycode.backendui.html.renderers.table.model;
 
 import lombok.NonNull;
 import lombok.Value;

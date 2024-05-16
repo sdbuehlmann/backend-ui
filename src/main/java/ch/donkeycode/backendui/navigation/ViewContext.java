@@ -1,6 +1,7 @@
 package ch.donkeycode.backendui.navigation;
 
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.html.utils.HtmlElement;
 import lombok.Builder;
 import lombok.Value;
 import lombok.val;
@@ -27,7 +28,7 @@ public class ViewContext {
             previousViewController.ifPresent(viewController -> viewController.beforeLeafing(this));
 
             nextViewController.enter(this, data);
-            val element =  nextViewController.render(this, data); // TODO Replace trough enter-method ?
+            val element = nextViewController.render(this, data); // TODO Replace trough enter-method ?
             displayElement.accept(element, containerId);
 
             previousViewController.ifPresent(ViewController::afterLeafing);
@@ -42,6 +43,14 @@ public class ViewContext {
 
     public void updateElement(UUID containerId, DisplayableElement displayableElement) {
         displayElement.accept(displayableElement, containerId);
+    }
+
+    public void updateElement(UUID containerId, HtmlElement element) {
+        displayElement.accept(DisplayableElement.builder()
+                        .id(containerId)
+                        .html(element.toString())
+                        .build(),
+                containerId);
     }
 
     private <T> ViewController<T> findMatchingViewController(NavigationTarget<T> target) {

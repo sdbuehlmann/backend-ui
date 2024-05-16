@@ -1,9 +1,9 @@
-package ch.donkeycode.backendui.html.elements.actionbar;
+package ch.donkeycode.backendui.html.renderers.actionbar;
 
 import ch.donkeycode.backendui.frontend.ResponseHandler;
 import ch.donkeycode.backendui.frontend.functions.Run;
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 

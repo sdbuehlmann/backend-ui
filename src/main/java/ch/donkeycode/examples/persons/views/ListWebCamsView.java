@@ -1,10 +1,10 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
-import ch.donkeycode.backendui.html.elements.table.TableRenderer;
-import ch.donkeycode.backendui.html.elements.table.model.RenderableTable;
-import ch.donkeycode.backendui.html.elements.table.model.TableRowAction;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
+import ch.donkeycode.backendui.html.renderers.table.TableRenderer;
+import ch.donkeycode.backendui.html.renderers.table.model.RenderableTable;
+import ch.donkeycode.backendui.html.renderers.table.model.TableRowAction;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewContext;
 import ch.donkeycode.backendui.navigation.ViewController;

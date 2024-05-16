@@ -1,12 +1,12 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.elements.form.FormRenderer;
-import ch.donkeycode.backendui.html.elements.form.model.RenderableForm;
-import ch.donkeycode.backendui.html.elements.form.model.RenderableFormGroup;
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.backendui.html.elements.model.ReadOnlyStringProperty;
-import ch.donkeycode.backendui.html.elements.model.ReadWriteStringProperty;
-import ch.donkeycode.backendui.html.elements.model.RenderableAction;
+import ch.donkeycode.backendui.html.renderers.form.FormRenderer;
+import ch.donkeycode.backendui.html.renderers.form.model.RenderableForm;
+import ch.donkeycode.backendui.html.renderers.form.model.RenderableFormGroup;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
+import ch.donkeycode.backendui.html.renderers.model.ReadWriteStringProperty;
+import ch.donkeycode.backendui.html.renderers.model.RenderableAction;
 import ch.donkeycode.examples.persons.Converter;
 import ch.donkeycode.examples.persons.NavigationTargetRegistry;
 import ch.donkeycode.examples.persons.model.Buildable;

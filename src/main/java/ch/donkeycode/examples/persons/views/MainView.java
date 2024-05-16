@@ -1,8 +1,9 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
-import ch.donkeycode.backendui.html.elements.model.RenderableRunnable;
+import ch.donkeycode.backendui.common.ResourcesResolver;
 import ch.donkeycode.backendui.html.layouts.TabsLayoutRenderer;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewContext;
 import ch.donkeycode.backendui.navigation.ViewController;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,9 +43,17 @@ public class MainView implements ViewController<Void> {
                 ),
                 new RenderableRunnable(
                         "Esel anzeigen",
-                        () -> subContextRef
-                                .get()
-                                .display(NavigationTargetRegistry.SHOW_DONKEY_IMAGE, null)
+                        () -> {
+                            try (val inputStream = ResourcesResolver.loadResource("images/donkey.png")) {
+                                val image = ImageIO.read(inputStream);
+
+                                subContextRef
+                                        .get()
+                                        .display(NavigationTargetRegistry.SHOW_BUFFERED_IMAGE, image);
+                            } catch (Exception e) {
+                                throw new RuntimeException("Failed to load image", e);
+                            }
+                        }
                 ),
                 new RenderableRunnable(
                         "Stammdaten",

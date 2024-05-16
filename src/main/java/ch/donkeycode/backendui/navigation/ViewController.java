@@ -1,6 +1,6 @@
 package ch.donkeycode.backendui.navigation;
 
-import ch.donkeycode.backendui.html.elements.model.DisplayableElement;
+import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
 
 public interface ViewController<T> {
 
