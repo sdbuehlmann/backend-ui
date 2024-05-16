@@ -149,9 +149,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
                     .elementHtml(element.getHtml())
                     .build();
 
-            LOG.info("Send update: {}", payload);
-
-            session.sendMessage(new TextMessage(om.writeValueAsString(payload)));
+            synchronized (session) {
+                LOG.info("Send update: {}", payload);
+                session.sendMessage(new TextMessage(om.writeValueAsString(payload)));
+            }
         }
     }
 }

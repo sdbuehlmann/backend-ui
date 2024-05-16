@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -25,6 +24,7 @@ public class WebCamService {
 
     public List<CamInfo> getAvailableCams() {
         return Webcam.getWebcams().stream()
+                .peek(webcam -> webcam.setCustomViewSizes(WebcamResolution.HD.getSize()))
                 .flatMap(webcam -> Stream.concat(
                         Arrays.stream(webcam.getViewSizes())
                                 .map(dimension -> CamInfo.builder()
@@ -84,8 +84,11 @@ public class WebCamService {
         private final AtomicReference<Boolean> running;
         private final CompletableFuture<Void> stopped;
 
-        public void stopBlocking() {
+        public void stop() {
             running.set(false);
+        }
+
+        public void waitUntilStopped() {
             stopped.join();
         }
     }

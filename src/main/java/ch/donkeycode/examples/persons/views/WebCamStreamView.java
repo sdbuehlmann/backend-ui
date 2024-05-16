@@ -23,6 +23,8 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
 
     private final AtomicReference<WebCamService.CapturingHandle> capturingHandleRef = new AtomicReference<>();
 
+    private final UUID containerId = UUID.randomUUID();
+
     @Override
     public NavigationTarget<WebCamService.CamInfo> getHandledNavigationTarget() {
         return NavigationTargetRegistry.SHOW_WEBCAM_STREAM;
@@ -32,13 +34,14 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
     public DisplayableElement render(ViewContext context, WebCamService.CamInfo camInfo) {
 
         capturingHandleRef.set(webCamService.startCapturing(camInfo, bufferedImage -> {
-            context.updateElement(context.getContainerId(), new ImageRenderer(bufferedImage).render());
+            context.updateElement(containerId, new ImageRenderer(bufferedImage).render());
         }));
 
         return DisplayableElement.builder()
                 .id(UUID.randomUUID())
                 .html(HtmlElement.builder()
                         .name("div")
+                        .attribute("id", containerId.toString())
                         .content("Starting webcam stream...")
                         .build().toString())
                 .responseHandlers(List.of())
@@ -47,6 +50,10 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
 
     @Override
     public void beforeLeafing(ViewContext context) {
+        capturingHandleRef
+                .get()
+                .stop();
+
         context.updateElement(context.getContainerId(), DisplayableElement.builder()
                 .id(UUID.randomUUID())
                 .html(HtmlElement.builder()
@@ -58,6 +65,6 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
 
         capturingHandleRef
                 .get()
-                .stopBlocking();
+                .waitUntilStopped();
     }
 }
