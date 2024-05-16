@@ -1,16 +1,16 @@
 package ch.donkeycode.backendui.html.renderers.actionbar;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.ResponseHandler;
 import ch.donkeycode.backendui.frontend.functions.Run;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
+import ch.donkeycode.backendui.html.utils.HtmlElement;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ActionBarRenderer {
@@ -18,43 +18,38 @@ public class ActionBarRenderer {
     private final List<RenderableRunnable> renderableRunnables;
 
     private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
-    private final UUID formId = UUID.randomUUID();
+    private final UUID elementId = UUID.randomUUID();
 
     public DisplayableElement render() {
         val html = createActionsBar(renderableRunnables);
 
         return DisplayableElement.builder()
-                .html(html)
+                .html(html.toString())
                 .responseHandlers(responseHandlers)
                 .build();
     }
 
-    private String createActionsBar(final List<RenderableRunnable> runnables) {
-        return String.format("""
-                        <div>
-                            %s
-                        </div>
-                        """,
-                runnables.stream()
-                        .map(this::createActionButton)
-                        .collect(Collectors.joining())
-        );
+    private HtmlElement createActionsBar(final List<RenderableRunnable> runnables) {
+        return HtmlElement.builder()
+                .name("div")
+                .idAttribute(elementId)
+                .content(runnables.stream()
+                        .map(this::createActionButton))
+                .build();
     }
 
-    private String createActionButton(final RenderableRunnable runnable) {
+    private HtmlElement createActionButton(final RenderableRunnable runnable) {
         val run = Run.builder()
+                .relatedElementId(elementId)
                 .runnable(runnable.getRunnable())
                 .build();
 
-        val html = String.format("""
-                        <button onclick="%s">%s</button>
-                        """,
-                run.asJsFunction(),
-                runnable.getTitle()
-        );
-
         responseHandlers.add(run);
 
-        return html;
+        return HtmlElement.builder()
+                .name("button")
+                .attribute("onclick", run.asJsFunction())
+                .content(runnable.getTitle())
+                .build();
     }
 }

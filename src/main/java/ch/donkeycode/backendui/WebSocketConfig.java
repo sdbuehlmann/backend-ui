@@ -1,9 +1,9 @@
 package ch.donkeycode.backendui;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.common.Store;
 import ch.donkeycode.backendui.frontend.dto.be2ui.SetInnerHtmlDto;
+import ch.donkeycode.backendui.frontend.dto.ui2be.RemovedElementsDto;
 import ch.donkeycode.backendui.frontend.dto.ui2be.ResponseDto;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
 import ch.donkeycode.backendui.navigation.NavigationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Configuration
 @Slf4j
@@ -43,12 +42,20 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public static class MyWebSocketHandler implements WebSocketHandler {
 
         private static final UUID MAIN_ELEMENT_ID = UUID.fromString("0490eee0-c48a-42c6-9296-be94c83acb2d");
+        private static final UUID ELEMENTS_REMOVED_RESPONSE_ID = UUID.fromString("65284f2b-8516-4d10-83b9-119444e274d4");
 
         private final ObjectMapper om = new ObjectMapper();
 
         private final NavigationService navigationService;
 
-        private final AtomicReference<List<DisplayableElement>> currentElements = new AtomicReference<>(new ArrayList<>());
+        private final Store<UUID, ResponseHandler<?>> responseHandlersStore = new Store<>(builder -> builder
+                .keyExtractor(ResponseHandler::getResponseId)
+                .initValues(Set.of(GenericResponseHandler.<RemovedElementsDto>builder()
+                        .responseId(ELEMENTS_REMOVED_RESPONSE_ID)
+                        .relatedElementId(MAIN_ELEMENT_ID)
+                        .handledType(RemovedElementsDto.class)
+                        .responseHandler(removedElementsDto -> cleanUpHandlersForElements(removedElementsDto.getIds()))
+                        .build())));
 
         @Override
         public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -65,20 +72,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
                         message.getPayload().toString(),
                         ResponseDto.class);
 
-                LOG.info("Message received: {}", responseDto);
+                LOG.trace("Message received: {}", responseDto);
 
-                currentElements.updateAndGet(displayedElements -> {
-                    displayedElements.stream()
-                            .flatMap(displayedElement -> displayedElement.getResponseHandlers().stream())
-                            .filter(responseHandler -> responseHandler.getResponseId().equals(responseDto.getId()))
-                            .findAny()
-                            .ifPresentOrElse(
-                                    responseHandler -> handle(responseHandler, responseDto),
-                                    () -> LOG.error("Displayed element {} not found", responseDto.getId())
-                            );
+                responseHandlersStore.findById(responseDto.getId())
+                        .ifPresentOrElse(
+                                responseHandler -> handle(responseHandler, responseDto),
+                                () -> LOG.error("Response handler not found for response {}", responseDto.getId()));
 
-                    return displayedElements;
-                });
             } catch (Exception ex) {
                 LOG.error("Unexpected exception", ex);
             }
@@ -114,10 +114,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
         @SneakyThrows
         private void sendUpdate(WebSocketSession session, DisplayableElement element, UUID containerId) {
-            currentElements.updateAndGet(elements -> {
-                elements.add(element);
-                return elements;
-            });
+            responseHandlersStore.addAll(element.getResponseHandlers());
 
             val payload = SetInnerHtmlDto.builder()
                     .containerId(containerId)
@@ -125,8 +122,22 @@ public class WebSocketConfig implements WebSocketConfigurer {
                     .build();
 
             synchronized (session) {
-                LOG.info("Send update: {}", payload);
+                LOG.trace("Send update: {}", payload);
                 session.sendMessage(new TextMessage(om.writeValueAsString(payload)));
+            }
+        }
+
+        private void cleanUpHandlersForElements(Set<UUID> removedElementIds) {
+            val removed = responseHandlersStore.selectAndRemove(responseHandler -> removedElementIds
+                    .contains(responseHandler.getRelatedElementId()));
+
+            if (LOG.isInfoEnabled() && !removed.isEmpty()) {
+                LOG.info("Removed handlers:\n - {}", removed.stream()
+                        .map(responseHandler -> String.format(
+                                "element#%s; response#%s",
+                                responseHandler.getRelatedElementId(),
+                                responseHandler.getResponseId()))
+                        .collect(Collectors.joining("\n - ")));
             }
         }
     }

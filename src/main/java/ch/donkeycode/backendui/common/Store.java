@@ -41,6 +41,7 @@ public class Store<I, V> {
         val params = operator.apply(StoreParams.builder()).build();
         keyExtractor = params.getKeyExtractor();
         onSizeChanged = params.getOnSizeChanged();
+        addAll(params.getInitValues());
     }
 
     /**
@@ -56,6 +57,10 @@ public class Store<I, V> {
      * Does add values to this store. Existing values with same ID will be replaced.
      */
     public void addAll(final Collection<V> values) {
+        if (values.isEmpty()) {
+            return;
+        }
+
         val newValuesById = values.stream()
                 .collect(Collectors.toMap(keyExtractor, value -> value));
         valuesById.putAll(newValuesById);
@@ -247,13 +252,15 @@ public class Store<I, V> {
     public static class StoreParams<I, V> {
         @NonNull
         Function<V, I> keyExtractor;
+
+        @NonNull
         @Builder.Default
         Consumer<Integer> onSizeChanged = integer -> {
         };
 
-        // Fixes error "MavenReportException: Error while generating Javadoc"
-        public static class StoreParamsBuilder<I, V> {
-        }
+        @NonNull
+        @Builder.Default
+        Set<V> initValues = Set.of();
     }
 
     @Value

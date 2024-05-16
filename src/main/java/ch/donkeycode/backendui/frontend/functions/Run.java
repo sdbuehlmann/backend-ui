@@ -1,6 +1,6 @@
 package ch.donkeycode.backendui.frontend.functions;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.ResponseHandler;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -11,16 +11,9 @@ import java.util.UUID;
 @Builder
 public class Run implements ResponseHandler<Void> {
 
-    @NonNull
-    UUID responseId = UUID.randomUUID();
-
-    @NonNull
-    Runnable runnable;
-
-    @Override
-    public UUID getResponseId() {
-        return responseId;
-    }
+    @NonNull UUID responseId = UUID.randomUUID();
+    @NonNull UUID relatedElementId;
+    @NonNull Runnable runnable;
 
     @Override
     public Class<Void> getHandledType() {

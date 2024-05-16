@@ -3,8 +3,6 @@ const SOCKET = new WebSocket("ws://localhost:8080/websocket");
 
 async function init() {
     SOCKET.addEventListener("message", event => {
-        console.log('Nachricht vom Server erhalten:', event.data);
-
         const jsonObject = JSON.parse(event.data);
         handleSetInnerHtmlDto(jsonObject);
     })
@@ -28,6 +26,16 @@ function handleSetInnerHtmlDto(dto) {
     const tempWrappingElement = document.createElement('div');
     tempWrappingElement.innerHTML = dto.html;
 
+    const removedElementIds = Array.from(containerElement.querySelectorAll('[id]'))
+        .filter(element => element.id)
+        .map(element => element.id);
+
+    if (removedElementIds.length > 0) {
+        console.log("Ids removed elements: ", removedElementIds);
+
+        sendResponse("65284f2b-8516-4d10-83b9-119444e274d4", new RemovedElementsDto(removedElementIds));
+    }
+
     containerElement.replaceChildren(tempWrappingElement.firstChild);
 }
 
@@ -37,6 +45,8 @@ function handleSetInnerHtmlDto(dto) {
  */
 function sendResponse(id, data) {
     const responseDto = new ResponseDto(id, data);
+
+    console.log('Send response:', responseDto);
     SOCKET.send(JSON.stringify(responseDto));
 }
 
@@ -136,5 +146,20 @@ class ElementValueDto {
     constructor(elementId, value) {
         this.elementId = elementId;
         this.value = value;
+    }
+}
+
+class RemovedElementsDto {
+
+    /**
+     * @param {Array<String>} ids
+     */
+    ids;
+
+    /**
+     * @param {Array<String>} ids
+     */
+    constructor(ids) {
+        this.ids = ids;
     }
 }

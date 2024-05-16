@@ -1,6 +1,6 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.utils.CssStyle;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
 import ch.donkeycode.backendui.navigation.RootViewController;

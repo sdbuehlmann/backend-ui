@@ -1,8 +1,8 @@
 package ch.donkeycode.backendui.html.layouts;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.ResponseHandler;
 import ch.donkeycode.backendui.frontend.functions.Run;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.utils.CssStyle;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
@@ -63,6 +63,7 @@ public class TabsLayoutRenderer {
                 .add("cursor", "pointer");
 
         val run = Run.builder()
+                .relatedElementId(elementId)
                 .runnable(renderableRunnable.getRunnable())
                 .build();
 

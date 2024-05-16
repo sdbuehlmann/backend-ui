@@ -1,6 +1,6 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.renderers.table.TableRenderer;

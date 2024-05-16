@@ -1,10 +1,10 @@
 package ch.donkeycode.backendui.html.renderers.form;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.ResponseHandler;
 import ch.donkeycode.backendui.frontend.functions.CollectValuesAndRun;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableForm;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableFormGroup;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.ReadWriteStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableAction;

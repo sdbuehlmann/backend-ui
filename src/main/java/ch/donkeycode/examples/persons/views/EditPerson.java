@@ -3,7 +3,7 @@ package ch.donkeycode.examples.persons.views;
 import ch.donkeycode.backendui.html.renderers.form.FormRenderer;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableForm;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableFormGroup;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.ReadWriteStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableAction;

@@ -1,6 +1,6 @@
 package ch.donkeycode.backendui.navigation;
 
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
 import lombok.Builder;
 import lombok.Value;

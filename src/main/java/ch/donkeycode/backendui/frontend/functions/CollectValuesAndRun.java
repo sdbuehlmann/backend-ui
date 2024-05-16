@@ -1,6 +1,6 @@
 package ch.donkeycode.backendui.frontend.functions;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.ResponseHandler;
 import ch.donkeycode.backendui.frontend.dto.ui2be.ElementValuesDto;
 import lombok.Builder;
 import lombok.NonNull;
@@ -14,18 +14,13 @@ import java.util.function.Consumer;
 @Value
 @Builder
 public class CollectValuesAndRun implements ResponseHandler<ElementValuesDto> {
-    @NonNull
-    UUID parentElementId;
-
-    @NonNull
-    UUID responseId = UUID.randomUUID();
+    @NonNull UUID parentElementId;
+    @NonNull UUID responseId = UUID.randomUUID();
+    @NonNull Runnable runnable;
 
     @NonNull
     @Singular
     List<CollectableElement> collectableElements;
-
-    @NonNull
-    Runnable runnable;
 
     public String asJsFunction() {
         return String.format("""
@@ -34,6 +29,11 @@ public class CollectValuesAndRun implements ResponseHandler<ElementValuesDto> {
                 responseId,
                 parentElementId
         );
+    }
+
+    @Override
+    public UUID getRelatedElementId() {
+        return parentElementId;
     }
 
     @Override

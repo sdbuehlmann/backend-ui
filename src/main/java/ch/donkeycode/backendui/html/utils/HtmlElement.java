@@ -6,10 +6,12 @@ import lombok.Value;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
 @Builder
@@ -74,13 +76,21 @@ public class HtmlElement {
             return this;
         }
 
-        public HtmlElementBuilder content(HtmlElement... elements) {
-            this.content$value = Arrays.stream(elements)
+        public HtmlElementBuilder content(List<HtmlElement> elements) {
+            return content(elements.stream());
+        }
+
+        public HtmlElementBuilder content(Stream<HtmlElement> stream) {
+            this.content$value = stream
                     .map(HtmlElement::toString)
                     .collect(Collectors.joining());
             this.content$set = true;
 
             return this;
+        }
+
+        public HtmlElementBuilder content(HtmlElement... elements) {
+            return content(Arrays.stream(elements));
         }
     }
 }

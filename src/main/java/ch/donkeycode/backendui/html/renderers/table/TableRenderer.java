@@ -1,8 +1,8 @@
 package ch.donkeycode.backendui.html.renderers.table;
 
-import ch.donkeycode.backendui.frontend.ResponseHandler;
+import ch.donkeycode.backendui.ResponseHandler;
 import ch.donkeycode.backendui.html.renderers.actionbar.ActionBarRenderer;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.renderers.table.model.RenderableTable;
@@ -24,7 +24,7 @@ public class TableRenderer<T> {
 
     private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
 
-    private final UUID formId = UUID.randomUUID();
+    private final UUID elementId = UUID.randomUUID();
 
     public DisplayableElement render() {
         val actionBar = new ActionBarRenderer(renderableTable.getTableActions()).render();
@@ -35,7 +35,7 @@ public class TableRenderer<T> {
                             %s
                         </table>
                         """,
-                formId,
+                elementId,
                 actionBar.getHtml(),
                 createTable());
 

@@ -1,9 +1,11 @@
-package ch.donkeycode.backendui.frontend;
+package ch.donkeycode.backendui;
 
 import java.util.UUID;
 
 public interface ResponseHandler<T> {
     UUID getResponseId();
+
+    UUID getRelatedElementId();
 
     Class<T> getHandledType();
 

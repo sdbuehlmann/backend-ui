@@ -2,7 +2,7 @@ package ch.donkeycode.examples.persons.views;
 
 import ch.donkeycode.backendui.common.ResourcesResolver;
 import ch.donkeycode.backendui.html.layouts.TabsLayoutRenderer;
-import ch.donkeycode.backendui.html.renderers.model.DisplayableElement;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewContext;
