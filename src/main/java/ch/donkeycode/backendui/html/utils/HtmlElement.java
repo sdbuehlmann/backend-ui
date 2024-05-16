@@ -19,7 +19,8 @@ public class HtmlElement {
     String content = "";
 
     @NonNull
-    Set<KeyValue> attributes;
+    @Builder.Default
+    Set<KeyValue> attributes = Set.of();
 
     @Override
     public String toString() {
@@ -39,10 +40,12 @@ public class HtmlElement {
 
     public static class HtmlElementBuilder {
         public HtmlElementBuilder attribute(String key, String value) {
-            if (this.attributes == null) {
-                this.attributes = new HashSet<>();
+            if (this.attributes$value == null) {
+                this.attributes$value = new HashSet<>();
+                this.attributes$set = true;
             }
-            this.attributes.add(new KeyValue(key, value));
+
+            this.attributes$value.add(new KeyValue(key, value));
             return this;
         }
     }

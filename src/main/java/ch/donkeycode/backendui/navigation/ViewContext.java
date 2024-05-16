@@ -6,7 +6,9 @@ import lombok.Value;
 import lombok.val;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 @Value
@@ -16,14 +18,30 @@ public class ViewContext {
     BiConsumer<DisplayableElement, UUID> displayElement;
     List<ViewController<?>> viewControllers;
 
+    AtomicReference<Optional<ViewController<?>>> currentViewController = new AtomicReference<>(Optional.empty());
+
     public <T> void display(NavigationTarget<T> target, T data) {
-        val viewController = findMatchingViewController(target);
-        val element = viewController.render(this, data);
-        displayElement.accept(element, containerId);
+        val nextViewController = findMatchingViewController(target);
+
+        currentViewController.updateAndGet(previousViewController -> {
+            previousViewController.ifPresent(viewController -> viewController.beforeLeafing(this));
+
+            nextViewController.enter(this, data);
+            val element =  nextViewController.render(this, data); // TODO Replace trough enter-method ?
+            displayElement.accept(element, containerId);
+
+            previousViewController.ifPresent(ViewController::afterLeafing);
+
+            return Optional.of(nextViewController);
+        });
     }
 
     public ViewContext forSubContainer(UUID subContainerId) {
         return new ViewContext(subContainerId, displayElement, viewControllers);
+    }
+
+    public void updateElement(UUID containerId, DisplayableElement displayableElement) {
+        displayElement.accept(displayableElement, containerId);
     }
 
     private <T> ViewController<T> findMatchingViewController(NavigationTarget<T> target) {

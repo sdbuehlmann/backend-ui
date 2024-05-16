@@ -29,7 +29,6 @@ public class ImageRenderer {
         val html = HtmlElement.builder()
                 .name("img")
                 .attribute("id", elementId.toString())
-                .attribute("alt", "Bild wird geladen...")
                 .attribute("src", "data:image/png;base64," + base64EncodedImage)
                 .build();
 

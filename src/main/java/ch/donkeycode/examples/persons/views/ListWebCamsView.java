@@ -38,8 +38,12 @@ public class ListWebCamsView implements ViewController<Void> {
                         camInfo -> camInfo.getResolution().width + "x" + camInfo.getResolution().height
                 ))
                 .rowAction(new TableRowAction<>(
-                        "Select",
+                        "Single shot",
                         cam -> context.display(NavigationTargetRegistry.SHOW_BUFFERED_IMAGE, webCamService.takeImage(cam))
+                ))
+                .rowAction(new TableRowAction<>(
+                        "Start stream",
+                        cam -> context.display(NavigationTargetRegistry.SHOW_WEBCAM_STREAM, cam)
                 ))
                 .build();
 
