@@ -30,7 +30,7 @@ public class TableRenderer<T> {
         val actionBar = new ActionBarRenderer(renderableTable.getTableActions()).render();
 
         val html = String.format("""
-                        <div style="background: white; padding: 10px;" id="%s">
+                        <div id="%s">
                             %s
                             %s
                         </table>

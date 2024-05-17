@@ -3,6 +3,7 @@ package ch.donkeycode.backendui.html.elements;
 import ch.donkeycode.backendui.html.utils.CssStyle;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -19,7 +20,10 @@ public class HtmlImg {
 
     private static final Base64.Encoder ENCODER = Base64.getEncoder();
 
+    @NonNull
     private final BufferedImage image;
+
+    @NonNull
     private final Dimension dimensionsInPx;
 
     public static class HtmlImgBuilder {

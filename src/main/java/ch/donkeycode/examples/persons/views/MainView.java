@@ -1,8 +1,9 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.common.ResourcesResolver;
-import ch.donkeycode.backendui.html.layouts.TabsLayoutRenderer;
 import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.common.ResourcesResolver;
+import ch.donkeycode.backendui.html.colors.ColorSchemes;
+import ch.donkeycode.backendui.html.layouts.TabsLayoutRenderer;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewContext;
@@ -63,10 +64,13 @@ public class MainView implements ViewController<Void> {
                 )
         );
 
-        val container = new TabsLayoutRenderer(tabs).render();
+        val container = new TabsLayoutRenderer(tabs, ColorSchemes.Green.INSTANCE).render();
         containerIdRef.set(container.getContainerId());
         subContextRef.set(context.forSubContainer(container.getContainerId()));
 
-        return container.getDisplayableElement();
+        return DisplayableElement.builder()
+                .responseHandlers(container.getResponseHandlers())
+                .html(container.getHtml().toString())
+                .build();
     }
 }

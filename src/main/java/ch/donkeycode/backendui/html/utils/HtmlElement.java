@@ -44,6 +44,11 @@ public class HtmlElement {
     }
 
     public static class HtmlElementBuilder {
+        public HtmlElementBuilder div() {
+            this.name = "div";
+            return this;
+        }
+
         public HtmlElementBuilder attribute(String key, String value) {
             if (this.attributes$value == null) {
                 this.attributes$value = new HashSet<>();

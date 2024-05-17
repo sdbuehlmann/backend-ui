@@ -2,7 +2,7 @@ package ch.donkeycode.backendui.html.layouts;
 
 import ch.donkeycode.backendui.ResponseHandler;
 import ch.donkeycode.backendui.frontend.functions.Run;
-import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.html.colors.ColorScheme;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.utils.CssStyle;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
@@ -15,51 +15,62 @@ import lombok.val;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class TabsLayoutRenderer {
 
     private final List<RenderableRunnable> renderableRunnables;
+    private final ColorScheme colorScheme;
 
     private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
     private final UUID elementId = UUID.randomUUID();
     private final UUID containerId = UUID.randomUUID();
 
-    public Container render() {
-        val html = String.format("""
-                        <div id="%s" style="width: 100%%; height: 100%%; display: grid; grid-template-columns: minmax(150px, 25%%) 1fr;">
-                            <div style="background: yellow">
-                                <!-- tabs container -->
-                                %s
-                            </div>
-                            <div style="background: blue">
-                                <!-- views container -->
-                                <div id="%s">
-                                </div>
-                            </div>
-                        </div>
-                        """,
-                elementId,
-                renderableRunnables.stream()
-                        .map(this::createTab)
-                        .collect(Collectors.joining()),
-                containerId);
+    public Result render() {
+        val html = HtmlElement.builder()
+                .div()
+                .idAttribute(elementId)
+                .styleAttribute(new CssStyle()
+                        .add("width", "100%")
+                        .add("height", "100%")
+                        .add("display", "grid")
+                        .color(colorScheme.getText())
+                        .add("grid-template-columns", "minmax(150px, 25%) 1fr"))
+                .content(
+                        // tabs container
+                        HtmlElement.builder()
+                                .div()
+                                .styleAttribute(new CssStyle()
+                                        .backgroundColor(colorScheme.getDarker()))
+                                .content(renderableRunnables.stream()
+                                        .map(this::createTab))
+                                .build(),
+                        // views container
+                        HtmlElement.builder()
+                                .div()
+                                .styleAttribute(new CssStyle()
+                                        .add("padding", "10px")
+                                        .backgroundColor(colorScheme.getPrimary()))
+                                .content(HtmlElement.builder()
+                                        .div()
+                                        .idAttribute(containerId)
+                                        .build())
+                                .build()
+                )
+                .build();
 
-        return Container.builder()
+        return Result.builder()
                 .containerId(containerId)
-                .displayableElement(DisplayableElement.builder()
-                        .html(html)
-                        .responseHandlers(responseHandlers)
-                        .build())
+                .html(html)
+                .responseHandlers(responseHandlers)
                 .build();
     }
 
-    private String createTab(RenderableRunnable renderableRunnable) {
+    private HtmlElement createTab(RenderableRunnable renderableRunnable) {
         val style = new CssStyle()
                 .add("margin", "10px")
                 .add("padding", "10px")
-                .add("background-color", "rgba(0, 0, 0, 0.1)")
+                .backgroundColor(colorScheme.getDarker())
                 .add("cursor", "pointer");
 
         val run = Run.builder()
@@ -69,23 +80,26 @@ public class TabsLayoutRenderer {
 
         val html = HtmlElement.builder()
                 .name("div")
-                .attribute("style", style.toInlineStyle())
+                .styleAttribute(style)
                 .attribute("onClick", run.asJsFunction())
                 .content(renderableRunnable.getTitle())
                 .build();
 
         responseHandlers.add(run);
 
-        return html.toString();
+        return html;
     }
 
     @Value
     @Builder
-    public static class Container {
+    public static class Result {
         @NonNull
         UUID containerId;
 
         @NonNull
-        DisplayableElement displayableElement;
+        HtmlElement html;
+
+        @NonNull
+        List<ResponseHandler<?>> responseHandlers;
     }
 }

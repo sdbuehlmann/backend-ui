@@ -1,5 +1,7 @@
 package ch.donkeycode.backendui.html.utils;
 
+import ch.donkeycode.backendui.html.colors.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +12,14 @@ public class CssStyle {
     public CssStyle add(String key, String value) {
         entries.add(new KeyValue(key, value));
         return this;
+    }
+
+    public CssStyle backgroundColor(Color color) {
+        return add("background-color", color.getCssColor());
+    }
+
+    public CssStyle color(Color color) {
+        return add("color", color.getCssColor());
     }
 
     public String toInlineStyle() {
