@@ -2,6 +2,7 @@ package ch.donkeycode.backendui.html.utils;
 
 import ch.donkeycode.backendui.html.colors.Color;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,13 @@ public class CssStyle {
 
     public CssStyle backgroundColor(Color color) {
         return add("background-color", color.getCssColor());
+    }
+
+    public CssStyle dimensionInPx(Dimension dimension) {
+        add("width", dimension.width + "px");
+        add("height", dimension.height + "px");
+
+        return this;
     }
 
     public CssStyle color(Color color) {

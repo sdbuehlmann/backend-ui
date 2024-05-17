@@ -60,7 +60,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
         @Override
         public void afterConnectionEstablished(WebSocketSession session) throws Exception {
             navigationService
-                    .context((displayableElement, containerId) -> sendUpdate(session, displayableElement, containerId), MAIN_ELEMENT_ID)
+                    .context(
+                            responseHandlersStore::add,
+                            (displayableElement, containerId) -> sendUpdate(session, displayableElement, containerId),
+                            MAIN_ELEMENT_ID
+                    )
                     .displayRoot();
         }
 

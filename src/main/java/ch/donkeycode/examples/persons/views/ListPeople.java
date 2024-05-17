@@ -1,6 +1,7 @@
 package ch.donkeycode.examples.persons.views;
 
 import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.html.colors.ColorSchemeService;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.renderers.table.TableRenderer;
@@ -24,6 +25,7 @@ import java.util.List;
 public class ListPeople implements ViewController<List<Person>> {
 
     private final PeopleStore peopleStore;
+    private final ColorSchemeService colorSchemeService;
 
     @Override
     public NavigationTarget<List<Person>> getHandledNavigationTarget() {
@@ -70,6 +72,11 @@ public class ListPeople implements ViewController<List<Person>> {
                 .build();
 
 
-        return new TableRenderer<>(table, model).render();
+        return new TableRenderer<>(
+                table,
+                model,
+                colorSchemeService.getActiveColorScheme(),
+                viewContext.getResponseHandlerRegisterer()
+        ).render();
     }
 }

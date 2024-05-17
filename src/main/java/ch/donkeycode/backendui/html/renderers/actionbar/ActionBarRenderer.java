@@ -1,55 +1,59 @@
 package ch.donkeycode.backendui.html.renderers.actionbar;
 
-import ch.donkeycode.backendui.DisplayableElement;
-import ch.donkeycode.backendui.ResponseHandler;
+import ch.donkeycode.backendui.frontend.functions.JsFunctionGenerator;
 import ch.donkeycode.backendui.frontend.functions.Run;
+import ch.donkeycode.backendui.html.colors.Color;
+import ch.donkeycode.backendui.html.elements.FlatButton;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
+import ch.donkeycode.backendui.html.utils.CssStyle;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
+import ch.donkeycode.backendui.navigation.ResponseHandlerRegisterer;
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
+import lombok.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Builder
 public class ActionBarRenderer {
+    @NonNull
+    private final List<Action> actions;
 
-    private final List<RenderableRunnable> renderableRunnables;
+    @NonNull
+    private final Color backgroundColor;
 
-    private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
     private final UUID elementId = UUID.randomUUID();
 
-    public DisplayableElement render() {
-        val html = createActionsBar(renderableRunnables);
-
-        return DisplayableElement.builder()
-                .html(html.toString())
-                .responseHandlers(responseHandlers)
-                .build();
-    }
-
-    private HtmlElement createActionsBar(final List<RenderableRunnable> runnables) {
+    public HtmlElement render() {
         return HtmlElement.builder()
-                .name("div")
+                .div()
                 .idAttribute(elementId)
-                .content(runnables.stream()
+                .styleAttribute(new CssStyle()
+                        .add("padding", "0")
+                        .add("gap", "5px")
+                        .add("display", "flex")
+                        .add("flex-direction", "row"))
+                .content(actions.stream()
                         .map(this::createActionButton))
                 .build();
     }
 
-    private HtmlElement createActionButton(final RenderableRunnable runnable) {
-        val run = Run.builder()
-                .relatedElementId(elementId)
-                .runnable(runnable.getRunnable())
-                .build();
+    private HtmlElement createActionButton(final Action action) {
+        return FlatButton.builder()
+                .text(action.getText())
+                .onClickFunction(action.getOnClickFunction())
+                .backgroundColor(backgroundColor)
+                .build()
+                .get();
+    }
 
-        responseHandlers.add(run);
-
-        return HtmlElement.builder()
-                .name("button")
-                .attribute("onclick", run.asJsFunction())
-                .content(runnable.getTitle())
-                .build();
+    @Value
+    @Builder
+    public static class Action {
+        JsFunctionGenerator onClickFunction;
+        String text;
     }
 }

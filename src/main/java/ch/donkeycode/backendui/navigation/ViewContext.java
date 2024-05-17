@@ -3,6 +3,7 @@ package ch.donkeycode.backendui.navigation;
 import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.val;
 
@@ -20,6 +21,9 @@ public class ViewContext {
     List<ViewController<?>> viewControllers;
     RootViewController rootViewController;
 
+    @NonNull
+    ResponseHandlerRegisterer responseHandlerRegisterer;
+
     AtomicReference<Optional<ViewController<?>>> currentViewController = new AtomicReference<>(Optional.empty());
 
     public <T> void display(NavigationTarget<T> target, T data) {
@@ -32,7 +36,7 @@ public class ViewContext {
     }
 
     public ViewContext forSubContainer(UUID subContainerId) {
-        return new ViewContext(subContainerId, displayElement, viewControllers, rootViewController);
+        return new ViewContext(subContainerId, displayElement, viewControllers, rootViewController, responseHandlerRegisterer);
     }
 
     public void updateElement(UUID containerId, DisplayableElement displayableElement) {

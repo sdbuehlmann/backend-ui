@@ -1,19 +1,20 @@
 package ch.donkeycode.examples.persons.views;
 
+import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.html.colors.ColorSchemeService;
 import ch.donkeycode.backendui.html.renderers.form.FormRenderer;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableForm;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableFormGroup;
-import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.ReadWriteStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableAction;
+import ch.donkeycode.backendui.navigation.NavigationTarget;
+import ch.donkeycode.backendui.navigation.ViewContext;
+import ch.donkeycode.backendui.navigation.ViewController;
 import ch.donkeycode.examples.persons.Converter;
 import ch.donkeycode.examples.persons.NavigationTargetRegistry;
 import ch.donkeycode.examples.persons.model.Buildable;
 import ch.donkeycode.examples.persons.model.Person;
-import ch.donkeycode.backendui.navigation.ViewContext;
-import ch.donkeycode.backendui.navigation.NavigationTarget;
-import ch.donkeycode.backendui.navigation.ViewController;
 import ch.donkeycode.examples.persons.services.PeopleStore;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 public class EditPerson implements ViewController<Person> {
 
     private final PeopleStore peopleStore;
+    private final ColorSchemeService colorSchemeService;
 
     @Override
     public NavigationTarget<Person> getHandledNavigationTarget() {
@@ -64,8 +66,8 @@ public class EditPerson implements ViewController<Person> {
                         "Speichern",
                         person -> {
                             peopleStore.createOrUpdate(person.getId(), unused -> person.toBuilder()
-                                        .lastUpdatedAt(LocalDateTime.now())
-                                        .build());
+                                    .lastUpdatedAt(LocalDateTime.now())
+                                    .build());
                             context
                                     .display(
                                             NavigationTargetRegistry.LIST_PEOPLE,
@@ -81,6 +83,11 @@ public class EditPerson implements ViewController<Person> {
                 ))
                 .build();
 
-        return new FormRenderer<>(form, model).render();
+        return new FormRenderer<>(
+                form,
+                model,
+                context.getResponseHandlerRegisterer(),
+                colorSchemeService.getActiveColorScheme()
+        ).render();
     }
 }

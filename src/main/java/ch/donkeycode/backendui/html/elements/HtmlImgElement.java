@@ -16,7 +16,7 @@ import java.util.Base64;
 
 @Builder
 @RequiredArgsConstructor
-public class HtmlImg {
+public class HtmlImgElement {
 
     private static final Base64.Encoder ENCODER = Base64.getEncoder();
 
@@ -26,7 +26,7 @@ public class HtmlImg {
     @NonNull
     private final Dimension dimensionsInPx;
 
-    public static class HtmlImgBuilder {
+    public static class HtmlImgElementBuilder {
         public HtmlElement build() {
             val base64EncodedImage = encodeBase64(image);
 

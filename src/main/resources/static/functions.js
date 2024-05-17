@@ -65,6 +65,8 @@ function collectElementValues(containerId) {
 
         return new ElementValuesDto(Array
             .from(allIds)
+            .filter(element => element.value)
+            .filter(element => element.id)
             .map(element => new ElementValueDto(element.id, element.value)));
     }
 

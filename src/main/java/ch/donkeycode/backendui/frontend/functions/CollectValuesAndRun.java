@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 @Value
 @Builder
-public class CollectValuesAndRun implements ResponseHandler<ElementValuesDto> {
+public class CollectValuesAndRun implements ResponseHandler<ElementValuesDto>, JsFunctionGenerator {
     @NonNull UUID parentElementId;
     @NonNull UUID responseId = UUID.randomUUID();
     @NonNull Runnable runnable;
@@ -22,6 +22,7 @@ public class CollectValuesAndRun implements ResponseHandler<ElementValuesDto> {
     @Singular
     List<CollectableElement> collectableElements;
 
+    @Override
     public String asJsFunction() {
         return String.format("""
                         sendResponse('%s',collectElementValues('%s'))

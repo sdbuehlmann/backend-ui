@@ -1,6 +1,6 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.elements.HtmlImg;
+import ch.donkeycode.backendui.html.elements.HtmlImgElement;
 import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.navigation.NavigationTarget;
 import ch.donkeycode.backendui.navigation.ViewContext;
@@ -21,7 +21,7 @@ public class ShowBufferedImageView implements ViewController<BufferedImage> {
 
     @Override
     public DisplayableElement render(ViewContext context, BufferedImage bufferedImage) {
-        val img = HtmlImg.builder()
+        val img = HtmlImgElement.builder()
                 .image(bufferedImage)
                 .dimensionsInPx(WebcamResolution.HD.getSize())
                 .build();

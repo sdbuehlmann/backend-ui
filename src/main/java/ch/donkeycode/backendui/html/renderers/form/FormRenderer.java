@@ -1,14 +1,18 @@
 package ch.donkeycode.backendui.html.renderers.form;
 
-import ch.donkeycode.backendui.ResponseHandler;
+import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.frontend.functions.CollectValuesAndRun;
+import ch.donkeycode.backendui.html.colors.ColorScheme;
+import ch.donkeycode.backendui.html.renderers.actionbar.ActionBarRenderer;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableForm;
 import ch.donkeycode.backendui.html.renderers.form.model.RenderableFormGroup;
-import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.ReadWriteStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableAction;
+import ch.donkeycode.backendui.html.utils.HtmlElement;
+import ch.donkeycode.backendui.navigation.ResponseHandlerRegisterer;
 import ch.donkeycode.examples.persons.model.Buildable;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -16,24 +20,23 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class FormRenderer<T extends Buildable<T>> {
 
     private final RenderableForm<T> form;
     private final T data;
-    private final Buildable.Builder<T> builder;
+    private Buildable.Builder<T> builder;
 
     private final List<CollectValuesAndRun.CollectableElement> collectableElements = new ArrayList<>();
-    private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
 
     private final UUID formId = UUID.randomUUID();
 
-    public FormRenderer(RenderableForm<T> form, T data) {
-        this.form = form;
-        this.data = data;
-        this.builder = data.toBuilder();
-    }
+    private final ResponseHandlerRegisterer responseHandlerRegisterer;
+    private final ColorScheme colorScheme;
 
     public DisplayableElement render() {
+        this.builder = data.toBuilder();
+
         val html = String.format("""
                         <div id="%s">
                             %s
@@ -48,7 +51,6 @@ public class FormRenderer<T extends Buildable<T>> {
 
         return DisplayableElement.builder()
                 .html(html)
-                .responseHandlers(responseHandlers)
                 .build();
     }
 
@@ -120,36 +122,27 @@ public class FormRenderer<T extends Buildable<T>> {
         return html;
     }
 
-    private String createActionsBar(final List<RenderableAction<T>> actions) {
-        return String.format("""
-                        <div>
-                            %s
-                        </div>
-                        """,
-                actions.stream()
-                        .map(this::createActionButton)
-                        .collect(Collectors.joining())
-        );
+    private HtmlElement createActionsBar(final List<RenderableAction<T>> actions) {
+        return ActionBarRenderer.builder()
+                .actions(actions.stream()
+                        .map(this::createAction)
+                        .toList())
+                .backgroundColor(colorScheme.getDarker())
+                .build().render();
     }
 
-    private String createActionButton(final RenderableAction<T> action) {
-        val valuesCollector = CollectValuesAndRun.builder()
+    private ActionBarRenderer.Action createAction(final RenderableAction<T> action) {
+        val valuesCollector = responseHandlerRegisterer.registerAndReturn(CollectValuesAndRun.builder()
                 .parentElementId(formId)
                 .collectableElements(collectableElements)
                 .runnable(() -> action
                         .getAction()
                         .accept(builder.build()))
+                .build());
+
+        return ActionBarRenderer.Action.builder()
+                .onClickFunction(valuesCollector)
+                .text(action.getTitle())
                 .build();
-
-        val html = String.format("""
-                        <button onclick="%s">%s</button>
-                        """,
-                valuesCollector.asJsFunction(),
-                action.getTitle()
-        );
-
-        responseHandlers.add(valuesCollector);
-
-        return html;
     }
 }

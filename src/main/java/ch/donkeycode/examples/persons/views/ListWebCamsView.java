@@ -1,6 +1,7 @@
 package ch.donkeycode.examples.persons.views;
 
 import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.html.colors.ColorSchemeService;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.table.TableRenderer;
 import ch.donkeycode.backendui.html.renderers.table.model.RenderableTable;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ListWebCamsView implements ViewController<Void> {
 
     private final WebCamService webCamService;
+    private final ColorSchemeService colorSchemeService; // TODO: In Context? Muss bei Switch eh neu gebaut werden...
 
     @Override
     public NavigationTarget<Void> getHandledNavigationTarget() {
@@ -47,7 +49,12 @@ public class ListWebCamsView implements ViewController<Void> {
                 ))
                 .build();
 
-        return new TableRenderer<>(table, cams).render();
+        return new TableRenderer<>(
+                table,
+                cams,
+                colorSchemeService.getActiveColorScheme(),
+                context.getResponseHandlerRegisterer()
+        ).render();
     }
 
 

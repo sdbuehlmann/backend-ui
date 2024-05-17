@@ -1,6 +1,6 @@
 package ch.donkeycode.examples.persons.views;
 
-import ch.donkeycode.backendui.html.elements.HtmlImg;
+import ch.donkeycode.backendui.html.elements.HtmlImgElement;
 import ch.donkeycode.backendui.html.layouts.VerticalStackLayout;
 import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
@@ -66,7 +66,7 @@ public class WebCamStreamView implements ViewController<WebCamService.CamInfo> {
         );
 
         capturingHandleRef.set(webCamService.startCapturing(camInfo, bufferedImage -> {
-            val img = HtmlImg.builder()
+            val img = HtmlImgElement.builder()
                     .image(bufferedImage)
                     .dimensionsInPx(targetDimension)
                     .build();

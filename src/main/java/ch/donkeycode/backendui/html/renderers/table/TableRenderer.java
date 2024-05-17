@@ -1,20 +1,20 @@
 package ch.donkeycode.backendui.html.renderers.table;
 
-import ch.donkeycode.backendui.ResponseHandler;
-import ch.donkeycode.backendui.html.renderers.actionbar.ActionBarRenderer;
 import ch.donkeycode.backendui.DisplayableElement;
+import ch.donkeycode.backendui.frontend.functions.Run;
+import ch.donkeycode.backendui.html.colors.ColorScheme;
+import ch.donkeycode.backendui.html.renderers.actionbar.ActionBarRenderer;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
-import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.renderers.table.model.RenderableTable;
 import ch.donkeycode.backendui.html.renderers.table.model.TableRowAction;
+import ch.donkeycode.backendui.navigation.ResponseHandlerRegisterer;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class TableRenderer<T> {
@@ -22,12 +22,33 @@ public class TableRenderer<T> {
     private final RenderableTable<T> renderableTable;
     private final List<T> data;
 
-    private final List<ResponseHandler<?>> responseHandlers = new ArrayList<>();
+    @NonNull
+    private final ColorScheme colorScheme;
+
+    @NonNull
+    private final ResponseHandlerRegisterer responseHandlerRegisterer;
 
     private final UUID elementId = UUID.randomUUID();
 
     public DisplayableElement render() {
-        val actionBar = new ActionBarRenderer(renderableTable.getTableActions()).render();
+        val barActions = renderableTable.getTableActions().stream()
+                .map(renderableRunnable -> {
+                    val onClickFunction = responseHandlerRegisterer.registerAndReturn(Run.builder()
+                            .relatedElementId(elementId)
+                            .runnable(renderableRunnable.getRunnable())
+                            .build());
+                    return ActionBarRenderer.Action.builder()
+                            .onClickFunction(onClickFunction)
+                            .text(renderableRunnable.getTitle())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+
+        val actionBar = ActionBarRenderer.builder()
+                .backgroundColor(colorScheme.getDarker())
+                .actions(barActions)
+                .build().render();
 
         val html = String.format("""
                         <div id="%s">
@@ -36,14 +57,11 @@ public class TableRenderer<T> {
                         </table>
                         """,
                 elementId,
-                actionBar.getHtml(),
+                actionBar,
                 createTable());
 
         return DisplayableElement.builder()
                 .html(html)
-                .responseHandlers(
-                        Stream.concat(actionBar.getResponseHandlers().stream(), responseHandlers.stream())
-                                .toList())
                 .build();
     }
 
@@ -128,18 +146,29 @@ public class TableRenderer<T> {
     }
 
     private String createActionCell(List<TableRowAction<T>> actions, T data) {
-        val actionBar = new ActionBarRenderer(actions.stream()
-                .map(tableRowAction -> new RenderableRunnable(tableRowAction.getTitle(), () -> tableRowAction.getOnAction().accept(data)))
-                .toList()).render();
+        val barActions = actions.stream()
+                .map(tableRowAction -> {
+                    val onClickFunction = responseHandlerRegisterer.registerAndReturn(Run.builder()
+                            .relatedElementId(elementId)
+                            .runnable(() -> tableRowAction.getOnAction().accept(data))
+                            .build());
+                    return ActionBarRenderer.Action.builder()
+                            .onClickFunction(onClickFunction)
+                            .text(tableRowAction.getTitle())
+                            .build();
+                })
+                .collect(Collectors.toList());
 
-        val html = String.format("""
+
+        val actionBar = ActionBarRenderer.builder()
+                .backgroundColor(colorScheme.getDarker())
+                .actions(barActions)
+                .build().render();
+
+        return String.format("""
                         <td style="text-align: left; padding: 8px;">%s</td>
                         """,
-                actionBar.getHtml()
+                actionBar.toString()
         );
-
-        responseHandlers.addAll(actionBar.getResponseHandlers());
-
-        return html;
     }
 }
