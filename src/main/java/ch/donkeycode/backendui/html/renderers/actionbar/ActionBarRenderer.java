@@ -4,10 +4,12 @@ import ch.donkeycode.backendui.frontend.functions.JsFunctionGenerator;
 import ch.donkeycode.backendui.frontend.functions.Run;
 import ch.donkeycode.backendui.html.colors.Color;
 import ch.donkeycode.backendui.html.elements.FlatButton;
+import ch.donkeycode.backendui.html.elements.Icon;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.utils.CssStyle;
 import ch.donkeycode.backendui.html.utils.HtmlElement;
 import ch.donkeycode.backendui.navigation.ResponseHandlerRegisterer;
+import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,9 @@ public class ActionBarRenderer {
 
     @NonNull
     private final Color backgroundColor;
+
+    @NonNull
+    private final Color textColor;
 
     private final UUID elementId = UUID.randomUUID();
 
@@ -46,6 +51,8 @@ public class ActionBarRenderer {
                 .text(action.getText())
                 .onClickFunction(action.getOnClickFunction())
                 .backgroundColor(backgroundColor)
+                .textColor(textColor)
+                .icon(action.getIcon())
                 .build()
                 .get();
     }
@@ -55,5 +62,8 @@ public class ActionBarRenderer {
     public static class Action {
         JsFunctionGenerator onClickFunction;
         String text;
+
+        @Nullable
+        Icon icon;
     }
 }

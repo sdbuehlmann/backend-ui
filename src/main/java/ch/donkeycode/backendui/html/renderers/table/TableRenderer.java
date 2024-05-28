@@ -40,6 +40,7 @@ public class TableRenderer<T> {
                     return ActionBarRenderer.Action.builder()
                             .onClickFunction(onClickFunction)
                             .text(renderableRunnable.getTitle())
+                            .icon(renderableRunnable.getIcon())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -47,6 +48,7 @@ public class TableRenderer<T> {
 
         val actionBar = ActionBarRenderer.builder()
                 .backgroundColor(colorScheme.getDarker())
+                .textColor(colorScheme.getText())
                 .actions(barActions)
                 .build().render();
 
@@ -155,6 +157,7 @@ public class TableRenderer<T> {
                     return ActionBarRenderer.Action.builder()
                             .onClickFunction(onClickFunction)
                             .text(tableRowAction.getTitle())
+                            .icon(tableRowAction.getIcon())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -162,6 +165,7 @@ public class TableRenderer<T> {
 
         val actionBar = ActionBarRenderer.builder()
                 .backgroundColor(colorScheme.getDarker())
+                .textColor(colorScheme.getText())
                 .actions(barActions)
                 .build().render();
 

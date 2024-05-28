@@ -91,6 +91,16 @@ public class StringIterator {
     }
 
     public interface CharSelector {
+        CharSelector IS_ALPHA_NUMERIC = StringIterator.CharSelector.isAlphaNumeric();
+        CharSelector IS_NOT_ALPHA_NUMERIC = StringIterator.CharSelector.isNotAlphaNumeric();
+        CharSelector IS_WHITE_SPACE = StringIterator.CharSelector.isWhiteSpace();
+        CharSelector IS_NO_WHITE_SPACE = value -> !value.equals(" ");
+        CharSelector IS_EQUAL_SIGN = value -> value.equals("=");
+        CharSelector IS_QUOTATION_MARK = value -> value.equals("\"");
+        CharSelector IS_SLASH = value -> value.equals("/");
+        CharSelector IS_GREATER_THAN = value -> value.equals(">");
+        CharSelector IS_LESS_THAN = value -> value.equals("<");
+
         boolean isSearched(String value);
 
         default boolean isSearched(char value) {

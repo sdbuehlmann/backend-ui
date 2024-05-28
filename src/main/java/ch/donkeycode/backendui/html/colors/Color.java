@@ -1,15 +1,20 @@
 package ch.donkeycode.backendui.html.colors;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
-@RequiredArgsConstructor
+@Value
 public class Color {
-    @Getter
-    private final String cssColor;
+    int r;
+    int g;
+    int b;
+    int a;
 
-    public static Color rgba(int r, int g, int b, double a) {
-        return new Color("rgba(" + r + ", " + g + ", " + b + ", " + a + ")");
+    public String getCssColor() {
+        return "rgba(" + r + ", " + g + ", " + b + ", " + (a / 255.0) + ")";
+    }
+
+    public String getHexColor() {
+        return String.format("#%02x%02x%02x%02x", r, g, b, a).toUpperCase();
     }
 
     public static Color rgba(String rgbaString) {
@@ -20,8 +25,8 @@ public class Color {
         int r = Integer.parseInt(rgbaString.substring(0, 2), 16);
         int g = Integer.parseInt(rgbaString.substring(2, 4), 16);
         int b = Integer.parseInt(rgbaString.substring(4, 6), 16);
-        double a = Integer.parseInt(rgbaString.substring(6, 8), 16) / 255.0;
+        int a = Integer.parseInt(rgbaString.substring(6, 8), 16);
 
-        return rgba(r, g, b, a);
+        return new Color(r, g, b, a);
     }
 }

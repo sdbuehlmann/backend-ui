@@ -2,6 +2,7 @@ package ch.donkeycode.examples.persons.views;
 
 import ch.donkeycode.backendui.DisplayableElement;
 import ch.donkeycode.backendui.html.colors.ColorSchemeService;
+import ch.donkeycode.backendui.html.elements.Icon;
 import ch.donkeycode.backendui.html.renderers.model.ReadOnlyStringProperty;
 import ch.donkeycode.backendui.html.renderers.model.RenderableRunnable;
 import ch.donkeycode.backendui.html.renderers.table.TableRenderer;
@@ -37,6 +38,7 @@ public class ListPeople implements ViewController<List<Person>> {
         val table = RenderableTable.<Person>builder()
                 .tableAction(new RenderableRunnable(
                         "Neu",
+                        Icon.DOCUMENT_WITH_PLUS,
                         () -> viewContext.display(NavigationTargetRegistry.EDIT_PERSON, Person.builder()
                                         .prename("")
                                         .name("")
@@ -60,10 +62,12 @@ public class ListPeople implements ViewController<List<Person>> {
                 ))
                 .rowAction(new TableRowAction<>(
                         "Bearbeiten",
+                        Icon.PENCIL,
                         person -> viewContext.display(NavigationTargetRegistry.EDIT_PERSON, person)
                 ))
                 .rowAction(new TableRowAction<>(
                         "Löschen",
+                        Icon.TRASH,
                         person -> {
                             peopleStore.deleteById(person.getId());
                             viewContext.display(NavigationTargetRegistry.LIST_PEOPLE, peopleStore.getPersons());

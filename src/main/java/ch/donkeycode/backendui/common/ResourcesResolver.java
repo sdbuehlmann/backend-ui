@@ -2,6 +2,7 @@ package ch.donkeycode.backendui.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.io.InputStream;
 import java.net.URL;

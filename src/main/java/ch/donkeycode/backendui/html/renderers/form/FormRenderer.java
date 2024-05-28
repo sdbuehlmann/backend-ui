@@ -128,6 +128,7 @@ public class FormRenderer<T extends Buildable<T>> {
                         .map(this::createAction)
                         .toList())
                 .backgroundColor(colorScheme.getDarker())
+                .textColor(colorScheme.getText())
                 .build().render();
     }
 

@@ -134,7 +134,7 @@ class StringIteratorTest {
             iterator.skipNext(); // is slash
         }
 
-        val tagName = iterator.continueUntilOneOf(IS_WHITE_SPACE);
+        val tagName = iterator.continueUntilOneOf(IS_NOT_ALPHA_NUMERIC);
 
         val tagBuilder = Tag.builder();
         while (iterator.doesFindResult(IS_ALPHA_NUMERIC)) {
